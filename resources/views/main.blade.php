@@ -7,13 +7,13 @@
         </div>
         @auth
         <div class="links">
-            <a href="https://laravel.com/docs"  class="text-danger">Unesi artikal</a>
-            <a href="https://laracasts.com" class="text-danger">Prikazi sve artikle</a>
+            <a href="https://laravel.com/docs"  class="text-danger">Artikli</a>
+            <a href="https://laracasts.com" class="text-warning">Poreske stope</a>
             <a href="{{route('indexKategorija')}}" class="text-success">Kategorije</a>
-            <a href="https://blog.laravel.com" class="text-danger">Dodaj dokument</a>
-            <a href="/" class="text-warning">Dodaj komitenta</a>
+            <a href="https://blog.laravel.com" class="text-danger">Dokumenti</a>
+            <a href="{{route('indexKomitent')}}" class="text-success">Komitenti</a>
             <a href="{{route('indexJedinicamere')}}" class="text-success">Merne jedinice</a>
-            <a href="https://vapor.laravel.com" class="text-danger">Vapor</a>
+            <a href="https://vapor.laravel.com" class="text-danger">Kasa</a>
             <a href="https://github.com/laravel/laravel" class="text-danger">GitHub</a>
         </div>
         @else

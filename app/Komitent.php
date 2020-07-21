@@ -11,8 +11,8 @@ class Komitent extends Model
     public $timestamps=false;
     protected $guarded=[];
 
-    public function dokumenti()
-    {
-        return $this->hasMany(Dokument::class,'SifKom','Sifra');
-    }
+//    public function dokumenti()
+//    {
+//        return $this->hasMany(Dokument::class,'SifKom','Sifra');
+//    }
 }

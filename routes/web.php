@@ -42,8 +42,9 @@ Route::middleware('auth')->group(function (){
 
     //komitenti
     Route::get('/komitenti','KomitentController@index')->name('indexKomitent');
+    Route::get('/komtineti/dodaj','KomitentController@create')->name('createKomitent');
     Route::post('/komitenti/dodaj','KomitentController@store')->name('storeKomitent');
-    Route::get('/komitenti{komitent}/show','KomitentController@show')->name('showKomitent');
+    Route::get('/komitenti/{komitent}/show','KomitentController@show')->name('showKomitent');
     Route::get('/komitenti/{komitent}/edit','KomitentController@edit')->name('editKomitent');
     Route::patch('/komitenti/{komitent}','KomitentController@update')->name('updateKomitent');
     Route::delete('/komitenti/{komitent}','KomitentController@destroy')->name('destroyKomitent');
