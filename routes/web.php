@@ -49,4 +49,11 @@ Route::middleware('auth')->group(function (){
     Route::patch('/komitenti/{komitent}','KomitentController@update')->name('updateKomitent');
     Route::delete('/komitenti/{komitent}','KomitentController@destroy')->name('destroyKomitent');
 
+    //poreske stope
+    Route::get('/poreskestope','PoreskastopaController@index')->name('indexPoreskastopa');
+    Route::post('/poreskestope/dodajPoreskustopu','PoreskastopaController@store')->name('storePoreskastopa');
+    Route::get('/poreskestope/{poreskastopa}/edit','PoreskastopaController@edit')->name('editPoreskastopa');
+    Route::patch('/poreskestope/{poreskastopa}','PoreskastopaController@update')->name('updatePoreskastopa');
+    Route::delete('/poreskestope/{poreskastopa}','PoreskastopaController@destroy')->name('destroyPoreskastopa');
+
 });

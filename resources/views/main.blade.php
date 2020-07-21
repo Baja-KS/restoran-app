@@ -8,7 +8,7 @@
         @auth
         <div class="links">
             <a href="https://laravel.com/docs"  class="text-danger">Artikli</a>
-            <a href="https://laracasts.com" class="text-warning">Poreske stope</a>
+            <a href="{{route('indexPoreskastopa')}}" class="text-success">Poreske stope</a>
             <a href="{{route('indexKategorija')}}" class="text-success">Kategorije</a>
             <a href="https://blog.laravel.com" class="text-danger">Dokumenti</a>
             <a href="{{route('indexKomitent')}}" class="text-success">Komitenti</a>
