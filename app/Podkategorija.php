@@ -14,4 +14,9 @@ class Podkategorija extends Model
     {
         return $this->belongsTo(Kategorija::class,'GlavnaKategorija','SifKat');
     }
+
+    public function artikli()
+    {
+        return $this->hasMany(Artikal::class,'Kategorija','SifKat');
+    }
 }

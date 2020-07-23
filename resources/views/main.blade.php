@@ -7,10 +7,10 @@
         </div>
         @auth
         <div class="links">
-            <a href="https://laravel.com/docs"  class="text-danger">Artikli</a>
+            <a href="{{route('indexArtikal')}}"  class="text-success">Artikli</a>
             <a href="{{route('indexPoreskastopa')}}" class="text-success">Poreske stope</a>
             <a href="{{route('indexKategorija')}}" class="text-success">Kategorije</a>
-            <a href="https://blog.laravel.com" class="text-danger">Dokumenti</a>
+            <a href="https://blog.laravel.com" class="text-warning">Dokumenti</a>
             <a href="{{route('indexKomitent')}}" class="text-success">Komitenti</a>
             <a href="{{route('indexJedinicamere')}}" class="text-success">Merne jedinice</a>
             <a href="https://vapor.laravel.com" class="text-danger">Kasa</a>

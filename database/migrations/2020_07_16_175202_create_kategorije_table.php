@@ -23,7 +23,6 @@ class CreateKategorijeTable extends Migration
             $table->text('Opis')->nullable();
             $table->foreignId('GlavnaKategorija')
                 ->constrained('tblKategorije','SifKat')
-                ->cascadeOnDelete()
                 ->cascadeOnUpdate();//vezano za tblPodKategorije
         });
     }

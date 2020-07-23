@@ -5,6 +5,7 @@
         <h2>Komitenti</h2>
         <hr>
         <table class="table table-borderless">
+            @if($komitenti->count()>0)
             <thead>
                 <tr>
                   <th>Naziv</th>
@@ -12,6 +13,7 @@
                     <th>PIB</th>
                 </tr>
             </thead>
+            @endif
             @forelse($komitenti as $komitent)
                 <tr>
                     <td><a href="{{route('showKomitent',$komitent->Sifra)}}" class=""><h4>{{$komitent->Naziv}}</h4></a></td>

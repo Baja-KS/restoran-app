@@ -20,14 +20,12 @@ class CreateArtikliTable extends Migration
 
             $table->string('Naziv');
 
-            $table->foreignId('Kategorija')  //foreign po KategorijaID iz tblKategorije
-            ->constrained('tblKategorije','KategorijaID')
-            ->cascadeOnUpdate()
-            ->cascadeOnDelete();
+            $table->foreignId('Kategorija')  //foreign po SifKat iz tblKategorije
+            ->constrained('tblPodKategorije','SifKat')
+            ->cascadeOnUpdate();
 
             $table->foreignId('Jedinicamere')
             ->constrained('tblIJM','JMID')
-            ->cascadeOnDelete()
             ->cascadeOnUpdate();//foreign po JMID iz tblIJM
 
 
@@ -38,16 +36,18 @@ class CreateArtikliTable extends Migration
             ->cascadeOnUpdate();//foreign po PK iz Users
 
 
-            $table->foreignId('PoreskaStopa');//foreign po TarifaID iz tblPoreskeStope
+            $table->foreignId('PoreskaStopa')
+            ->constrained('tblPoreskeStope','Sifra')
+            ->cascadeOnUpdate();//foreign po TarifaID iz tblPoreskeStope
 
 
-            $table->float('PDV');//racuna se -> poreska stopa*cena --OVO NE BIH RADIO--
+            //$table->float('PDV');//racuna se -> poreska stopa*cena --OVO NE BIH RADIO--
 
             //$table->date('Datum')->default(date('d-m-Y'));// datum
 
             //$table->time('Vreme')->default(date('H:i'));// vreme
 
-            $table->timestamp('DatumVreme');
+            $table->timestamps();
 
             $table->boolean('Normativ')->default(false);
             $table->boolean('Aktivan')->default(false);

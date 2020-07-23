@@ -27,10 +27,10 @@ class CreateMagacinTable extends Migration
             $table->float('ZadnjaNabavnaCena');
 
             //Prodavnica
-            $table->integer('Prodavnica');// redundantno
+            $table->integer('Prodavnica');
 
             //Prosecna Cena
-            $table->float('ProsecnaCena');// redundantno
+            //$table->float('ProsecnaCena');// redundantno racuna se , trebace promet robe
         });
     }
 

@@ -14,7 +14,8 @@ class CreateMesavineTable extends Migration
     public function up()
     {
         Schema::create('tblMesavine', function (Blueprint $table) {
-            $table->id();
+//            $table->id();
+            $table->primary(['ArtikalID','KomponentaID']);
             $table->foreignId('ArtikalID')
             ->constrained('tblArtikli','PLUKod')
             ->cascadeOnUpdate()
@@ -22,10 +23,10 @@ class CreateMesavineTable extends Migration
 
             $table->foreignId('KomponentaID')
             ->constrained('tblArtikli','PLUKod')
-            ->cascadeOnUpdate();
+            ->cascadeOnUpdate()
+            ->cascadeOnDelete();
 
             $table->float('Kolicina');
-
         });
     }
 

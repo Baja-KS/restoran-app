@@ -56,4 +56,12 @@ Route::middleware('auth')->group(function (){
     Route::patch('/poreskestope/{poreskastopa}','PoreskastopaController@update')->name('updatePoreskastopa');
     Route::delete('/poreskestope/{poreskastopa}','PoreskastopaController@destroy')->name('destroyPoreskastopa');
 
+    //artikli
+    Route::get('/artikli','ArtikalController@index')->name('indexArtikal');
+    Route::get('/artikli/{artikal:PLUKod}/show','ArtikalController@show')->name('showArtikal');
+    Route::get('/artikli/dodaj','ArtikalController@create')->name('createArtikal');
+    Route::post('/artikli/dodaj','ArtikalController@store')->name('storeArtikal');
+    Route::get('/artikli/{artikal:PLUKod}/edit','ArtikalController@edit')->name('editArtikal');
+    Route::patch('/artikli/{artikal:PLUKod}','ArtikalController@update')->name('updateArtikal');
+    Route::delete('/artikli/{artikal:PLUKod}','ArtikalController@destroy')->name('destroyArtikal');
 });
