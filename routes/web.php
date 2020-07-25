@@ -64,4 +64,48 @@ Route::middleware('auth')->group(function (){
     Route::get('/artikli/{artikal:PLUKod}/edit','ArtikalController@edit')->name('editArtikal');
     Route::patch('/artikli/{artikal:PLUKod}','ArtikalController@update')->name('updateArtikal');
     Route::delete('/artikli/{artikal:PLUKod}','ArtikalController@destroy')->name('destroyArtikal');
+
+    //vrste dokumenta
+    Route::get('/vrstedokumenta','VrstadokumentaController@index')->name('indexVrstadokumenta');
+    Route::get('/vrstedokumenta/dodaj','VrstadokumentaController@create')->name('createVrstadokumenta');
+    Route::post('/vrstedokumenta/dodaj','VrstadokumentaController@store')->name('storeVrstadokumenta');
+    Route::get('/vrstedokumenta/{vrstadokumenta}/edit','VrstadokumentaController@edit')->name('editVrstadokumenta');
+    Route::patch('/vrstedokumenta/{vrstadokumenta}','VrstadokumentaController@update')->name('updateVrstadokumenta');
+    Route::delete('/vrstedokumenta/{vrstadokumenta}','VrstadokumentaController@destroy')->name('destroyVrstadokumenta');
+
+    //vrste placanja
+    Route::get('/vrsteplacanja','VrstaplacanjaController@index')->name('indexVrstaplacanja');
+//    Route::get('/vrsteplacanja/dodaj','VrstaplacanjaController@create')->name('createVrstaPlacanja');
+    Route::post('/vrsteplacanja/dodaj','VrstaplacanjaController@store')->name('storeVrstaplacanja');
+    Route::get('/vrsteplacanja/{vrstaplacanja}/edit','VrstaplacanjaController@edit')->name('editVrstaplacanja');
+    Route::patch('/vrsteplacanja/{vrstaplacanja}','VrstaplacanjaController@update')->name('updateVrstaplacanja');
+    Route::delete('/vrsteplacanja/{vrstaplacanja}','VrstaplacanjaController@destroy')->name('destroyVrstaplacanja');
+
+    //stampaci
+    Route::get('/stampaci','StampacController@index')->name('indexStampac');
+    Route::post('/stampaci/dodaj','StampacController@store')->name('storeStampac');
+    Route::get('/stampaci/{stampac}/edit','StampacController@edit')->name('editStampac');
+    Route::patch('/stampaci/{stampac}','StampacController@update')->name('updateStampac');
+    Route::delete('/stampaci/{stampac}','StampacController@destroy')->name('destroyStampac');
+
+    //Organizacione jedinice
+    Route::get('/orgjed','OrganizacionajedinicaController@index')->name('indexOrganizacionajedinica');
+    Route::get('/orgjed/{organizacionajedinica}/show','OrganizacionajedinicaController@show')->name('showOrganizacionajedinica');
+    Route::post('/orgjed/dodaj','OrganizacionajedinicaController@store')->name('storeOrganizacionajedinica');
+    Route::get('/orgjed/{organizacionajedinica}/edit','OrganizacionajedinicaController@edit')->name('editOrganizacionajedinica');
+    Route::patch('/orgjed/{organizacionajedinica}','OrganizacionajedinicaController@update')->name('updateOrganizacionajedinica');
+    Route::delete('/orgjed/{organizacionajedinica}','OrganizacionajedinicaController@destroy')->name('destroyOrganizacionajedinica');
+
+    //Firme
+    Route::get('/firme','FirmaController@index')->name('indexFirma');
+    Route::get('/firme/{firma}/show','FirmaController@show')->name('showFirma');
+    Route::post('/firme/dodaj','FirmaController@store')->name('storeFirma');
+    Route::get('/firme/{firma}/edit','FirmaController@edit')->name('editFirma');
+    Route::patch('/firme/{firma}','FirmaController@update')->name('updateFirma');
+    Route::delete('/firme/{firma}','FirmaController@destroy')->name('destroyFirma');
+
+
+
+
+
 });

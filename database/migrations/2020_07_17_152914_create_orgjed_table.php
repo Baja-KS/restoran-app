@@ -17,6 +17,11 @@ class CreateOrgjedTable extends Migration
             $table->id('SifOj');
             $table->string('Vrsta',1);
             $table->string('Naziv');
+            $table->string('Adresa')->nullable();
+            $table->string('PostBr')->nullable();
+            $table->string('Mesto')->nullable();
+            $table->string('Telefon')->nullable();
+            $table->string('OdgLice')->nullable();
         });
     }
 
