@@ -17,6 +17,23 @@ class StavkaMagacina extends Model
 
     public function naStanju()
     {
-        return $this->KolicinaUlaza-$this->KolicinaIzlaza;
+        $artikal = $this->artikal;
+        if (!$artikal->Normativ)
+        {
+            return $this->KolicinaUlaza - $this->KolicinaIzlaza;
+        }
+        else
+        {
+            $komponente= $artikal->komponente;
+            $sadrzajKomponenta=[];
+            foreach ($komponente as $komponenta)
+            {
+                $naStanjuKomponenta=$komponenta->magacin->naStanju();
+                $kolicinaUMesavini=Artikal::kolicinaUMesavini($artikal,$komponenta);
+                $sadrzajKomponenta[]=($naStanjuKomponenta/$kolicinaUMesavini);
+            }
+            return min($sadrzajKomponenta);
+
+        }
     }
 }

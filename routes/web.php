@@ -13,14 +13,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('main');
-});
+
 
 Auth::routes();
 
-Route::get('/main', 'HomeController@index')->name('home');
+
 Route::middleware('auth')->group(function (){
+
+    Route::get('/main', 'HomeController@index')->name('home');
+    Route::get('/', function () {
+        return view('main');
+    });
     //kategorije i podkategorije
     Route::get('/kategorije','KategorijaController@index')->name('indexKategorija');
     Route::post('/kategorije/dodajKategoriju','KategorijaController@store')->name('storeKategorija');
@@ -64,6 +67,7 @@ Route::middleware('auth')->group(function (){
     Route::get('/artikli/{artikal:PLUKod}/edit','ArtikalController@edit')->name('editArtikal');
     Route::patch('/artikli/{artikal:PLUKod}','ArtikalController@update')->name('updateArtikal');
     Route::delete('/artikli/{artikal:PLUKod}','ArtikalController@destroy')->name('destroyArtikal');
+    Route::get('/artikli/grupe','GrupaAjaxController@show')->name('showGrupa');
 
     //vrste dokumenta
     Route::get('/vrstedokumenta','VrstadokumentaController@index')->name('indexVrstadokumenta');
@@ -97,12 +101,30 @@ Route::middleware('auth')->group(function (){
     Route::delete('/orgjed/{organizacionajedinica}','OrganizacionajedinicaController@destroy')->name('destroyOrganizacionajedinica');
 
     //Firme
-    Route::get('/firme','FirmaController@index')->name('indexFirma');
-    Route::get('/firme/{firma}/show','FirmaController@show')->name('showFirma');
-    Route::post('/firme/dodaj','FirmaController@store')->name('storeFirma');
-    Route::get('/firme/{firma}/edit','FirmaController@edit')->name('editFirma');
-    Route::patch('/firme/{firma}','FirmaController@update')->name('updateFirma');
-    Route::delete('/firme/{firma}','FirmaController@destroy')->name('destroyFirma');
+//    Route::get('/firme','FirmaController@index')->name('indexFirma');
+//    Route::get('/firme/{firma}/show','FirmaController@show')->name('showFirma');
+//    Route::post('/firme/dodaj','FirmaController@store')->name('storeFirma');
+//    Route::get('/firme/{firma}/edit','FirmaController@edit')->name('editFirma');
+//    Route::patch('/firme/{firma}','FirmaController@update')->name('updateFirma');
+//    Route::delete('/firme/{firma}','FirmaController@destroy')->name('destroyFirma');
+
+    Route::middleware('can:admin')->group(function (){
+        Route::get('/firme','FirmaController@index')->name('indexFirma');
+        Route::get('/firme/{firma}/show','FirmaController@show')->name('showFirma');
+        Route::post('/firme/dodaj','FirmaController@store')->name('storeFirma');
+        Route::get('/firme/{firma}/edit','FirmaController@edit')->name('editFirma');
+        Route::patch('/firme/{firma}','FirmaController@update')->name('updateFirma');
+        Route::delete('/firme/{firma}','FirmaController@destroy')->name('destroyFirma');
+    });
+
+    //kasa
+    Route::get('/kasa/{sto}/{greska?}','KasaController@create')->name('createKasa');//sto bez prethodne porduzbine
+    Route::post('/kasa/{sto}/noviracun','KasaController@store')->name('storeKasa');//BACKEND pamti porudzbinu i stampa naloge kuhinji i sanku
+    Route::get('/kasaedit/{sto}{greska?}','KasaController@edit')->name('editKasa');//sto sa prethodnom porudzbinom
+    Route::get('/kasanaplata/{sto}','KasaController@naplata')->name('naplataKasa');//otvara formu za naplatu
+    Route::delete('/kasanaplata/{sto}/naplati','KasaController@naplati')->name('naplatiKasa');//BACKEND brise porudzbinu iz baze,stampa racun,i pise isti u dokumenta
+    Route::get('/kasazatvaranje/{sto}','KasaController@zatvaranje')->name('zatvaranjeKasa');//otvara formu za zatvaranje racuna
+    Route::delete('/kasazatvaranje/{sto}/zatvori','KasaController@zatvori')->name('zatvoriKasa');//BACKEND brise porudzbinu iz baze otvorenih racuna i pise u zatvorene
 
 
 

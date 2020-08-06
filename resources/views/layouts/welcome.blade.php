@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{config('app.name')}}</title>
         <script src="{{ asset('js/app.js') }}" defer></script>
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -17,16 +17,16 @@
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-
         <!-- Styles -->
         <style>
             html, body {
-                background-color: #fff;
+                background-image: url("/public/images/Stolovi2.jpg");!important;
+                /*background-color: #fff;*/
                 color: #636b6f;
                 font-family: 'Nunito', sans-serif;
                 font-weight: 200;
-                height: 100vh;
-                margin: 0;
+                /*height: 100vh;*/
+                /*margin: 0;*/
             }
 
             .full-height {
@@ -72,25 +72,9 @@
             }
         </style>
     </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    <a class="justify-content-lg-start" href="{{route('home')}}">Back to homepage</a>
-                    @auth
-                        <form action="{{route('logout')}}" method="POST">
-                            @csrf
-                            <button type="submit">Logout</button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
+    <body style="background-image: url({{asset('images/Stolovi2.jpg')}}); background-repeat: no-repeat ; background-size: 100% 98%">
+        <div class="container full-height">
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
             @yield('content')
         </div>
     </body>

@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -38,7 +41,23 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware(['auth','isAdmin']);
+    }
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        event(new Registered($user = $this->create($request->all())));
+
+//        $this->guard()->login($user);
+
+        if ($response = $this->registered($request, $user)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+            ? new Response('', 201)
+            : redirect($this->redirectPath());
     }
 
     /**
@@ -57,7 +76,7 @@ class RegisterController extends Controller
             'ob'=>['required','integer','min:1'],
             'fir'=>['required','integer','min:1'],
             'ka'=>['required','integer','min:1'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+//            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ],[],['UserID','CompleteName','Objekat','Firma','Kasa','Password']);
     }
 
@@ -78,13 +97,16 @@ class RegisterController extends Controller
             $table->unsignedInteger('Kasa');*/
     protected function create(array $data)
     {
+        $admin=\request('admin') ? "Y" : "N";
         return User::create([
             'UserID' => $data['uid'],
             'CompleteName' => $data['name'],
             'Objekat' => $data['ob'],
             'Firma' => $data['fir'],
+            'Admin'=>$admin,
             'Kasa' => $data['ka'],
-            'password' => Hash::make($data['password']),
+//            'password' => Hash::make($data['password']),
+            'password'=>Hash::make(0)
         ]);
     }
 }

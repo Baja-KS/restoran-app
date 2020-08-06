@@ -8,12 +8,21 @@ class Firma extends Model
 {
     protected $table='tblFirme';
     protected $primaryKey='FirmaID';
-    public $timestamps=false;
     protected $guarded=[];
 
     public function stampac()
     {
         return $this->belongsTo(Stampac::class,'StampacID','StampacID');
     }
+
+//    public function aktiviraj()
+//    {
+//        $this->update(['Aktivan'=>true]);
+//    }
+//
+//    public function deaktiviraj()
+//    {
+//        $this->update(['Aktivan'=>false]);
+//    }
 
 }

@@ -12,7 +12,7 @@ class PodkategorijaController extends Controller
 {
     public function index(Kategorija $kategorija)
     {
-        $podkategorije=$kategorija->podkategorije;
+        $podkategorije=$kategorija->podkategorije()->paginate(7);
         return view('kategorije.podkategorije',['podkategorije'=>$podkategorije , 'kategorija'=>$kategorija]);
     }
     public function store(Kategorija $kategorija)

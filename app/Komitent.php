@@ -15,4 +15,8 @@ class Komitent extends Model
 //    {
 //        return $this->hasMany(Dokument::class,'SifKom','Sifra');
 //    }
+    public function otvoreniRacuni()
+    {
+        return $this->hasMany(OtvorenRacun::class,'Gost','Sifra');
+    }
 }

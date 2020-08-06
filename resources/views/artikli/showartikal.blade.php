@@ -5,7 +5,7 @@
         <div class="col-md-4">
             <h4 class="text">Naziv:{{$artikal->Naziv}}</h4>
             <h4>Kategorija:{{$artikal->podkategorija->Naziv}}</h4>
-            <h4>Jedinica Mere:{{$artikal->Normativ ? "Normativ" : $artikal->jedinicamere->Naziv}}</h4>
+            <h4>Jedinica Mere:{{ $artikal->jedinicamere->Naziv}}</h4>
             <h4>Poreska Stopa:{{$artikal->poreskastopa->Opis." - ".$artikal->poreskastopa->Vrednost}}%</h4>
             <h4>PLUKod:{{$artikal->PLUKod}}</h4>
             <h4>Barkod:{{$artikal->BarKod}}</h4>

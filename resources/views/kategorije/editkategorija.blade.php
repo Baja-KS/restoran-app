@@ -1,6 +1,7 @@
 @extends('layouts.welcome')
 
 @section('content')
+    @include('layouts.bezstolova')
     <div class="card-body">
         <a href="{{route('indexKategorija')}}" class="btn btn-success">Nazad</a>
         <form method="POST" action="{{ route('updateKategorija',$kategorija->SifKat) }}">

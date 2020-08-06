@@ -139,7 +139,7 @@
                     </div>
                 </div>
                 <div>
-                    <label for="stampacid" class="col-form-label">Poreska Stopa</label>
+                    <label for="stampacid" class="col-form-label">Stampac</label>
                     <select id="stampacid"  class="form-control dropdown" name="stampacid">
                         <option value="">Izaberi stampac</option>
                         @foreach($stampaci as $stampac)

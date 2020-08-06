@@ -1,6 +1,7 @@
 @extends('layouts.welcome')
 
 @section('content')
+    @include('layouts.bezstolova')
     <div class="col-md-4 justify-content-lg-start px-lg-5">
         <h2>Glavne kategorije</h2>
         <hr>

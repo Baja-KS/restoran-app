@@ -32,7 +32,7 @@ class CreateDokumentaStavkeTable extends Migration
             $table->timestamp('DatumVreme');
 //            $table->date('Datum')->default(date('d-m-Y'));// datum
 //            $table->time('Vreme')->default(date('H:i'));// vreme
-            $table->tinyInteger('Odstampano')->default(0);
+            $table->boolean('Odstampano')->default(false);
 
         });
     }

@@ -23,12 +23,14 @@ class CreateFirmeTable extends Migration
             $table->string('Banka');
             $table->string('Telefon');
             $table->string('Faks')->nullable();
+            $table->timestamps();
             $table->year('PoslovnaGodina')->default(date("Y"));
             $table->string('Objekat');
             $table->foreignId('StampacID')
             ->constrained('tblStampaci','StampacID')
             ->cascadeOnUpdate();
             $table->boolean('PDV')->default(true);
+//            $table->boolean('Aktivan')->default(true);
         });
     }
 

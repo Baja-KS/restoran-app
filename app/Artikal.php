@@ -83,4 +83,9 @@ class Artikal extends Model
         return 0;
     }
 
+    public function stavkeRacun()
+    {
+        return $this->hasMany(OtvorenRacunStavka::class,'Artikal','PLUKod');
+    }
+
 }

@@ -18,7 +18,8 @@ class CreatePrometrobeTable extends Migration
 
             $table->foreignId('BrojDokumentaID')
             ->constrained('tblDokumenta','id')
-            ->cascadeOnUpdate();
+            ->cascadeOnUpdate()
+            ->cascadeOnDelete();
 
             $table->unsignedBigInteger('BrojDokumenta');
 
@@ -28,7 +29,8 @@ class CreatePrometrobeTable extends Migration
 
             $table->foreignId('SifraArtikla')
             ->constrained('tblArtikli','PLUKod')
-            ->cascadeOnUpdate();
+            ->cascadeOnUpdate()
+            ->cascadeOnDelete();
 
             $table->float('Kolicina');
             $table->float('Cena');

@@ -1,6 +1,7 @@
 @extends('layouts.welcome')
 
 @section('content')
+    @include('layouts.bezstolova')
     <a href="{{route('indexKategorija')}}" class="btn btn-success">Nazad</a>
     <div class="col-md-4 justify-content-lg-start px-lg-5">
         <h2>{{$kategorija->Naziv}}</h2>
@@ -22,6 +23,7 @@
                 <p>Glavna kategorija {{$kategorija->Naziv}} nema nijednu podkategoriju</p>
             @endforelse
         </table>
+        {{$podkategorije->links()}}}
     </div>
     <div class="col-md-4 ml-5 float-lg-right px-lg-5">
         <div class="card-body">

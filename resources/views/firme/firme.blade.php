@@ -1,6 +1,13 @@
 @extends('layouts.welcome')
 
 @section('content')
+    @include('layouts.bezstolova')
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+        }
+    </style>
     <a href="{{route('home')}}" class="btn btn-success">Nazad</a>
     <div class="col-md-4 justify-content-lg-start px-lg-5">
         <h2>Firme</h2>
@@ -32,7 +39,7 @@
             @endforelse
         </table>
     </div>
-    <div class="col-md-6 container">
+    <div class="col-md-6 container float-lg-right">
         @yield('firme')
     </div>
     <script>

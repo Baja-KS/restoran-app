@@ -16,7 +16,7 @@ class ArtikalController extends Controller
 {
     public function index()
     {
-        $artikli=Artikal::paginate(5);
+        $artikli=Artikal::orderBy('created_at','desc')->paginate(5);
         return view('artikli.artikli',['artikli'=>$artikli]);
     }
 
@@ -28,10 +28,12 @@ class ArtikalController extends Controller
     public function create()
     {
         return view('artikli.createartikal',[
-            'artikli'=>Artikal::all(),
+            'artikli'=>Kategorija::where('Naziv','Komponente')->first()->artikli(),
             'kategorije'=> Podkategorija::all(),
             'jedinicemere'=> Jedinicamere::all(),
-            'poreskestope'=> PoreskaStopa::all()
+            'poreskestope'=> PoreskaStopa::all(),
+            'grupe'=>Kategorija::all(),
+            'kom'=>Jedinicamere::where('Naziv','kom')->first()
         ]);
     }
 
@@ -39,31 +41,30 @@ class ArtikalController extends Controller
     {
         $generalAttributes=\request()->validate([
             'naziv'=>['required','string'],
-            'kolicinaulaza'=>['numeric','nullable'],
-            'kolicinaizlaza'=>['numeric','nullable'],
-            'zadnjaprodajnacena'=>['required','numeric'],
-            'zadnjanabavnacena'=>['required','numeric']
+            'kategorija'=>['required','numeric'],
+            'poreskastopa'=>['required','numeric'],
         ]);
         $normativ=\request('normativ') ? true : false;
         $aktivan=\request('aktivan') ? true : false;
+        $jedinica=$normativ ? DB::table('tblIJM')->where('Naziv','kom')->pluck('JMID')->first() : \request('jedinicamere');
         Artikal::create([
             'PLUKod'=>Artikal::sledeciPLUKod(),
             'Naziv'=>$generalAttributes['naziv'],
-            'Kategorija'=>\request('kategorija'),
-            'Jedinicamere'=>\request('jedinicamere'),
+            'Kategorija'=>$generalAttributes['kategorija'],
+            'Jedinicamere'=>$jedinica,
             'BarKod'=>Artikal::sledeciPLUKod(),
             'Radnik'=>auth()->user()->PK,
-            'PoreskaStopa'=>\request('poreskastopa'),
+            'PoreskaStopa'=>$generalAttributes['poreskastopa'],
             'Normativ'=>$normativ,
             'Aktivan'=>$aktivan
         ]);
         $noviArtikal=Artikal::where('PLUKod',Artikal::trenutniPLUKod())->first();
         StavkaMagacina::create([
             'SifraArtikla'=>$noviArtikal->PLUKod,
-            'KolicinaUlaza'=>$generalAttributes['kolicinaulaza'],
-            'KolicinaIzlaza'=>$generalAttributes['kolicinaizlaza'],
-            'ZadnjaProdajnaCena'=>$generalAttributes['zadnjaprodajnacena'],
-            'ZadnjaNabavnaCena'=>$generalAttributes['zadnjanabavnacena'],
+            'KolicinaUlaza'=>0,
+            'KolicinaIzlaza'=>0,
+            'ZadnjaProdajnaCena'=>0,
+            'ZadnjaNabavnaCena'=>0,
             'Prodavnica'=>auth()->user()->Objekat
         ]);
         if ($normativ)
@@ -77,10 +78,6 @@ class ArtikalController extends Controller
                     'Kolicina'=> \request('kolicina')[$i]
                 ]);
             }
-            $noviArtikal->magacin()->update([
-                'KolicinaUlaza'=>0,
-                'KolicinaIzlaza'=>0
-            ]);
         }
         return Redirect::route('indexArtikal');
     }
@@ -88,11 +85,13 @@ class ArtikalController extends Controller
     public function edit(Artikal $artikal)
     {
         return view('artikli.editartikal',[
-            'artikli'=>Artikal::all(),
+            'artikli'=>Kategorija::where('Naziv','Komponente')->first()->artikli(),
             'artikal'=>$artikal,
             'kategorije'=> Podkategorija::all(),
+            'grupe'=>Kategorija::all(),
             'jedinicemere'=> Jedinicamere::all(),
-            'poreskestope'=> PoreskaStopa::all()
+            'poreskestope'=> PoreskaStopa::all(),
+            'kom'=>Jedinicamere::where('Naziv','kom')->first()
         ]);
     }
 
@@ -100,28 +99,19 @@ class ArtikalController extends Controller
     {
         $generalAttributes=\request()->validate([
             'naziv'=>['required','string'],
-            'kolicinaulaza'=>['numeric','nullable'],
-            'kolicinaizlaza'=>['numeric','nullable'],
-            'zadnjaprodajnacena'=>['required','numeric'],
-            'zadnjanabavnacena'=>['required','numeric'],
-            'prodavnica'=>['required','numeric']
+            'kategorija'=>['required','numeric'],
+            'poreskastopa'=>['required','numeric'],
         ]);
         $normativ=\request('normativ') ? true : false;
         $aktivan=\request('aktivan') ? true : false;
+        $jedinica=$normativ ? DB::table('tblIJM')->where('Naziv','kom')->pluck('JMID')->first() : \request('jedinicamere');
         $artikal->update([
             'Naziv'=>$generalAttributes['naziv'],
-            'Kategorija'=>\request('kategorija'),
-            'Jedinicamere'=>\request('jedinicamere'),
-            'PoreskaStopa'=>\request('poreskastopa'),
+            'Kategorija'=>$generalAttributes['kategorija'],
+            'PoreskaStopa'=>$generalAttributes['poreskastopa'],
+            'Jedinicamere'=>$jedinica,
             'Normativ'=>$normativ,
             'Aktivan'=>$aktivan
-        ]);
-        $artikal->magacin()->update([
-            'KolicinaUlaza'=>$generalAttributes['kolicinaulaza'],
-            'KolicinaIzlaza'=>$generalAttributes['kolicinaizlaza'],
-            'ZadnjaProdajnaCena'=>$generalAttributes['zadnjaprodajnacena'],
-            'ZadnjaNabavnaCena'=>$generalAttributes['zadnjanabavnacena'],
-            'Prodavnica'=>$generalAttributes['prodavnica']
         ]);
         if ($normativ)
         {
@@ -135,10 +125,6 @@ class ArtikalController extends Controller
                     'Kolicina'=> \request('kolicina')[$i]
                 ]);
             }
-            $artikal->magacin->update([
-                'KolicinaUlaza'=>0,
-                'KolicinaIzlaza'=>0
-            ]);
         }
         return Redirect::route('indexArtikal');
     }
