@@ -50,4 +50,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(OtvorenRacun::class,'Radnik','PK');
     }
+    public function zatvoreniRacuni()
+    {
+        return $this->hasMany(ZatvorenRacun::class,'Radnik','PK');
+    }
 }

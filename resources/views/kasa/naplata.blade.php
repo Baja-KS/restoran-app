@@ -1,0 +1,94 @@
+@extends('layouts.welcome')
+
+@section('content')
+    @include('layouts.bezstolova')
+    <style>
+        #naplataContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            flex-wrap: wrap;
+        }
+        .naplataSporedno{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #naplataFirma {
+            flex-direction: column;
+        }
+        #naplataFirmaCheck {
+            flex-direction: row;
+        }
+        #naplataFirmaPolja {
+            flex-direction: row;
+        }
+    </style>
+    <div id="naplataContainer">
+        <form action="{{route('naplatiKasa',$sto)}}" method="POST">
+            @csrf
+            @method('DELETE')
+            <div id="naplataButtons" class="naplataSporedno">
+                <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" value="gotovina">Gotovina</button>
+                <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" value="cek">Cek</button>
+                <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" value="kartica">Kartica</button>
+            </div>
+
+
+            <div id="naplataFields" class="naplataSporedno">
+                <label for="ukupno" class="text-light">Ukupno</label>
+                <input type="text" id="ukupno" name="ukupno" value="{{$racuni->sum('UkupnaCena')}}">
+
+                <label for="uplata" class="text-light">Uplata</label>
+                <input type="text" id="uplata" name="uplata">
+
+                <label for="povracaj" class="text-light">Povracaj</label>
+                <input type="text" id="povracaj" name="povracaj" value="0">
+            </div>
+
+            <div id="naplataFirma" class="naplataSporedno">
+                <div id="naplataFirmaCheck">
+                    <label for="stampanjefirma" class="text-light">Stampanje dokumenta uz racun</label>
+                    <input type="checkbox" name="stampanjefirma" id="stampanjefirma" value="1">
+                </div>
+                <div id="naplataFirmaPolja" style="display: none">
+                    <label for="firma" class="text-light">Firma:</label>
+                    <select id="firma" name="firma">
+                        <option value="" selected disabled>Izaberi firmu</option>
+                        @foreach($komitenti as $komitent)
+                            <option value="{{$komitent->Sifra}}" @foreach($racuni as $racun) @if(($racun->gost->Naziv ?? '/')==$komitent->Naziv) selected @endif @endforeach>{{$komitent->Naziv}}</option>
+                        @endforeach
+                    </select>
+                    <label for="brisecka" class="text-light">Broj Isecka</label>
+                    <input type="text" name="brisecka" id="brisecka">
+                </div>
+            </div>
+
+            <div id="naplataNazad" class="naplataSporedno">
+                <a href="{{route('editKasa',$sto)}}" class="btn my-5 btn-warning">Nazad</a>
+            </div>
+
+        </form>
+    </div>
+    <script>
+        $(document).ready(function () {
+            let ukupno=$("#ukupno").val()
+            let stampanjefirma=$("#stampanjefirma")
+            let firmapolja=$("#naplataFirmaPolja")
+            $("#uplata").keyup(function () {
+                let trenutno=$("#uplata").val()
+                $("#povracaj").val((trenutno-ukupno) > 0 ? (trenutno-ukupno) : 0)
+            })
+            if (stampanjefirma.is(':checked')) {
+                firmapolja.show();
+            }
+            else {
+                firmapolja.hide()
+            }
+            stampanjefirma.change(function () {
+                firmapolja.toggle()
+            })
+        })
+    </script>
+@endsection

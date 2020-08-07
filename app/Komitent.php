@@ -19,4 +19,8 @@ class Komitent extends Model
     {
         return $this->hasMany(OtvorenRacun::class,'Gost','Sifra');
     }
+    public function zatvoreniRacuni()
+    {
+        return $this->hasMany(ZatvorenRacun::class,'Gost','Sifra');
+    }
 }

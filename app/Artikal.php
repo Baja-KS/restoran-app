@@ -39,7 +39,7 @@ class Artikal extends Model
 
     public function PDV()
     {
-        return ($this->poreskastopa->vrednost/100)*$this->magacin->ZadnjaProdajnaCena;
+        return ($this->poreskastopa->Vrednost/100)*$this->magacin->ZadnjaProdajnaCena;
     }
     public static function trenutniPLUKod()
     {

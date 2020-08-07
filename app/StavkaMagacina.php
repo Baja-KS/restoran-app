@@ -36,4 +36,22 @@ class StavkaMagacina extends Model
 
         }
     }
+
+    public function prodaj($kolicina)
+    {
+        $artikal=$this->artikal;
+        if (!$artikal->Normativ)
+        {
+            $this->increment('KolicinaIzlaza',$kolicina);
+        }
+        else
+        {
+            $komponente=$artikal->komponente;
+            foreach ($komponente as $komponenta)
+            {
+                $kolicinaUMesavini=Artikal::kolicinaUMesavini($artikal,$komponenta);
+                $komponenta->magacin->increment('KolicinaIzlaza',($kolicina*$kolicinaUMesavini));
+            }
+        }
+    }
 }

@@ -15,4 +15,21 @@ class Stampac extends Model
     {
         return $this->hasMany(Firma::class,'StampacID','StampacID');
     }
+
+    public static function sank()
+    {
+        return Stampac::where('AkcijaStampaca','sank')->first();
+    }
+    public static function kuhinja()
+    {
+        return Stampac::where('AkcijaStampaca','kuhinja')->first();
+    }
+    public static function racun()
+    {
+        return Stampac::where('AkcijaStampaca','racun')->first();
+    }
+    public static function firma()
+    {
+        return Stampac::where('AkcijaStampaca','firma')->first();
+    }
 }

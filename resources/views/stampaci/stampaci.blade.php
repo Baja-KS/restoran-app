@@ -18,6 +18,7 @@
                 <tr>
                     <td><h4>{{$stampac->StampacID}}</h4></td>
                     <td><h4>{{$stampac->Naziv}}</h4></td>
+                    <td><h4>{{$stampac->AkcijaStampaca}}</h4></td>
                     <td><a href="{{route('editStampac',$stampac->StampacID)}}" class="btn btn-warning">Edit</a></td>
                     <td><form action="{{route('destroyStampac',$stampac->StampacID)}}" method="POST">
                             @csrf

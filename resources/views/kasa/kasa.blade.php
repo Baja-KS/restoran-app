@@ -274,8 +274,8 @@
         </div>
     </div>
     <div class="col-lg-2 col-md-2 col-sm-2 tastaturaNaplata">
-        <button type="submit" class="btn btn-danger my-lg-5 py-md-0 my-md-0" id="porudzbina">Porudzbina</button>
-        <a class="btn btn-warning py-md-0"  id="naplata">Naplata</a>
+        <button type="submit" name="akcija" value="poruci" class="btn btn-danger my-lg-5 py-md-0 my-md-0" id="porudzbina">Porudzbina</button>
+        <a class="btn btn-warning py-md-0" @if(\App\OtvorenRacun::brojRacunaZaSto($sto)>0) href="{{route('naplataKasa',$sto)}}" @endif  id="naplata">Naplata</a>
         <input type="text" class="mt-lg-4" id="kolicina"  placeholder="Kolicina">
         <div class="tastatura">
             <p class="btn btn-warning broj " id="1">1</p>
@@ -294,15 +294,29 @@
             <div>
                 <label for="napomena">Napomena</label>
                 <textarea id="napomena" name="napomena"></textarea>
+                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvorigotovina" value="zatvorigotovina" style="display: none">Zatvori Gotovinom</button>
+                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvoricek" value="zatvoricek" style="display: none">Zatvori Cekom</button>
+                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvorikartica" value="zatvorikartica" style="display: none">Zatvori Karticom</button>
             </div>
         </div>
         <div id="donji">
-            <p class="btn btn-block my-0 py-md-0 py-lg-2 btn-danger">Zatvori zapoceti racun</p>
+
+            <p class="btn btn-block my-0 py-md-0 py-lg-2 btn-danger" id="zatvori">Zatvori zapoceti racun</p>
             <a href="{{route('home')}}" class="btn btn-block py-md-0 my-0 btn-dark py-lg-2">Zatvori kasu</a>
         </div>
     </div>
     </form>
 </div>
+<script>
+    $(document).ready(function () {
+        $("#zatvori").click(function () {
+            $(this).hide()
+            $("#zatvorigotovina").show()
+            $("#zatvoricek").show()
+            $("#zatvorikartica").show()
+        })
+    })
+</script>
 <script>
     function popust() {
         let bezPopusta=$("#bezPopusta").val()

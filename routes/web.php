@@ -119,12 +119,10 @@ Route::middleware('auth')->group(function (){
 
     //kasa
     Route::get('/kasa/{sto}/{greska?}','KasaController@create')->name('createKasa');//sto bez prethodne porduzbine
-    Route::post('/kasa/{sto}/noviracun','KasaController@store')->name('storeKasa');//BACKEND pamti porudzbinu i stampa naloge kuhinji i sanku
-    Route::get('/kasaedit/{sto}{greska?}','KasaController@edit')->name('editKasa');//sto sa prethodnom porudzbinom
+    Route::post('/kasa/{sto}/noviracun','KasaController@store')->name('storeKasa');//BACKEND pamti porudzbinu i stampa naloge kuhinji i sanku ili zatvara racun
+    Route::get('/kasaedit/{sto}/{greska?}','KasaController@edit')->name('editKasa');//sto sa prethodnom porudzbinom
     Route::get('/kasanaplata/{sto}','KasaController@naplata')->name('naplataKasa');//otvara formu za naplatu
     Route::delete('/kasanaplata/{sto}/naplati','KasaController@naplati')->name('naplatiKasa');//BACKEND brise porudzbinu iz baze,stampa racun,i pise isti u dokumenta
-    Route::get('/kasazatvaranje/{sto}','KasaController@zatvaranje')->name('zatvaranjeKasa');//otvara formu za zatvaranje racuna
-    Route::delete('/kasazatvaranje/{sto}/zatvori','KasaController@zatvori')->name('zatvoriKasa');//BACKEND brise porudzbinu iz baze otvorenih racuna i pise u zatvorene
 
 
 

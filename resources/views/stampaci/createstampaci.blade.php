@@ -18,6 +18,15 @@
                     @enderror
                 </div>
             </div>
+            <div class="form-group row">
+                <label for="akcija" class="col-form-label">Mesto stampaca:</label>
+                <select id="akcija" name="akcija">
+                    <option value="" selected disabled>Izaberi akciju</option>
+                    @foreach($akcije as $akcija)
+                        <option value="{{$akcija}}">{{$akcija}}</option>
+                    @endforeach
+                </select>
+            </div>
             <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">
                     <button type="submit" class="btn btn-primary">

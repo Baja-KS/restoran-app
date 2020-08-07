@@ -63,4 +63,27 @@ class OtvorenRacun extends Model
         }
         return $zaKuhinju;
     }
+
+    public function zatvori($nacinPlacanja)
+    {
+        ZatvorenRacun::create([
+            'Sto'=>$this->Sto,
+            'Gost'=>$this->Gost,
+            'Radnik'=>$this->Radnik,
+            'Napomena'=>$this->Napomena,
+            'UkupnaCena'=>$this->UkupnaCena,
+            'Popust'=>$this->Popust,
+            'NacinPlacanja'=>$nacinPlacanja
+        ]);
+        $noviRacun=ZatvorenRacun::where('Sto',$this->Sto)->latest()->first();
+        foreach ($this->stavke as $stavka)
+        {
+            ZatvorenRacunStavka::create([
+                'brRacuna'=>$noviRacun->brojRacuna,
+                'Artikal'=>$stavka->Artikal,
+                'Kolicina'=>$stavka->Kolicina
+            ]);
+        }
+        OtvorenRacun::destroy($this->brojRacuna);
+    }
 }
