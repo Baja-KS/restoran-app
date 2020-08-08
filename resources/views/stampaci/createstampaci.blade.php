@@ -1,22 +1,19 @@
 @extends('stampaci.stampaci')
 
 @section('stampaci')
+    @if(\App\Stampac::all()->count()<4)
     <div class="card-body">
         <form method="POST" action="{{ route('storeStampac') }}">
             @csrf
 
             <div class="form-group row">
-                <label for="naziv" class="col-md-4 col-form-label text-md-right">{{ __('Naziv') }}</label>
-
-                <div class="col-md-6">
-                    <input id="naziv" type="text" class="form-control @error('naziv') is-invalid @enderror" name="naziv" value="{{ old('naziv') }}" required autocomplete="naziv" autofocus>
-
-                    @error('naziv')
-                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                    @enderror
-                </div>
+                <label for="naziv" class="col-form-label">Naziv stampaca:</label>
+                <select id="naziv" name="naziv">
+                    <option value="" selected disabled>Izaberi stampac</option>
+                    @foreach($dostupniStampaci as $stampac)
+                        <option value="{{$stampac}}">{{$stampac}}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group row">
                 <label for="akcija" class="col-form-label">Mesto stampaca:</label>
@@ -36,4 +33,5 @@
             </div>
         </form>
     </div>
+    @endif
 @endsection

@@ -1,6 +1,7 @@
 @extends('layouts.welcome')
 
 @section('content')
+    @include('layouts.bezstolova')
     <a href="{{route('home')}}" class="btn btn-success">Nazad</a>
     <div class="col-md-4 justify-content-lg-start px-lg-5">
         <h2>Stampaci</h2>

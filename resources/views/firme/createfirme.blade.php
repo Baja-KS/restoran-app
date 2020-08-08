@@ -32,6 +32,19 @@
                     </div>
                 </div>
                 <div class="form-group row">
+                    <label for="mesto" class="col-md-4 col-form-label text-md-right">{{ __('Mesto') }}</label>
+
+                    <div class="col-md-6">
+                        <input id="mesto" type="text" class="form-control @error('mesto') is-invalid @enderror" name="mesto" value="{{ old('mesto') }}" required autocomplete="mesto" autofocus>
+
+                        @error('mesto')
+                        <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label for="pib" class="col-md-4 col-form-label text-md-right">{{ __('PIB') }}</label>
 
                     <div class="col-md-6">
@@ -139,11 +152,11 @@
                     </div>
                 </div>
                 <div>
-                    <label for="stampacid" class="col-form-label">Stampac</label>
-                    <select id="stampacid"  class="form-control dropdown" name="stampacid">
-                        <option value="">Izaberi stampac</option>
-                        @foreach($stampaci as $stampac)
-                            <option value="{{$stampac->StampacID}}">{{$stampac->Naziv}}</option>
+                    <label for="fiskalni" class="col-form-label">Fiskalni Stampac</label>
+                    <select id="fiskalni"  class="form-control dropdown" name="fiskalni">
+                        <option value="">Izaberi fiskalni stampac</option>
+                        @foreach($fiskalniStampaci as $stampac)
+                            <option value="{{$stampac}}">{{$stampac}}</option>
                         @endforeach
                     </select>
                 </div>

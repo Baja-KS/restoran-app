@@ -6,22 +6,19 @@
             @csrf
             @method('PATCH')
             <div class="form-group row">
-                <label for="naziv" class="col-md-4 col-form-label text-md-right">{{ __('Naziv') }}</label>
-
-                <div class="col-md-6">
-                    <input id="naziv" type="text" class="form-control @error('naziv') is-invalid @enderror" name="naziv" value="{{ $stampac->Naziv }}" required autocomplete="naziv" autofocus>
-
-                    @error('naziv')
-                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                    @enderror
-                </div>
+                <label for="naziv" class="col-form-label">Naziv stampaca:</label>
+                <select id="naziv" name="naziv">
+                    <option value="" selected disabled>Izaberi stampac</option>
+                    @foreach($dostupniStampaci as $dstampac)
+                        <option value="{{$dstampac}}" @if($dstampac==$stampac->Naziv) selected @endif>{{$dstampac}}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-group row">
                 <label for="akcija" class="col-form-label">Mesto stampaca:</label>
                 <select id="akcija" name="akcija">
-                    <option value="" selected disabled>Izaberi akciju</option>
+                    <option value=""  disabled>Izaberi akciju</option>
+                    <option value="{{$stampac->AkcijaStampaca}}" selected>{{$stampac->AkcijaStampaca}}</option>
                     @foreach($akcije as $akcija)
                         <option value="{{$akcija}}" @if($stampac->AkcijaStampaca==$akcija) selected @endif>{{$akcija}}</option>
                     @endforeach

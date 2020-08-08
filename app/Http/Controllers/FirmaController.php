@@ -9,14 +9,16 @@ use Illuminate\Support\Facades\Redirect;
 
 class FirmaController extends Controller
 {
+    private $fiskalni=['INTRASTER','GENEKO','WINGS'];
+
     public function index()
     {
-        return view('firme.createfirme',['firme'=>Firma::all(),'stampaci'=>Stampac::all()]);
+        return view('firme.createfirme',['firme'=>Firma::all(),'fiskalniStampaci'=>$this->fiskalni]);
     }
 
     public function show(Firma $firma)
     {
-        return view('firme.showfirme',['firme'=>Firma::all(),'firma'=>$firma]);
+        return view('firme.showfirme',['firme'=>Firma::all(),'firma'=>$firma,'fiskalniStampaci'=>$this->fiskalni]);
     }
 
     public function store()
@@ -24,6 +26,7 @@ class FirmaController extends Controller
         $attributes=\request()->validate([
             'naziv'=>['required','string','max:40','min:1'],
             'adresa'=>['required','string','max:40','min:1'],
+            'mesto'=>['required','string','max:40','min:1'],
             'pib'=>['required','numeric'],
             'maticnibroj'=>['required','numeric','digits:8'],
             'tekuciracun'=>['required','numeric','digits:18'],
@@ -32,12 +35,13 @@ class FirmaController extends Controller
             'faks'=>['numeric','string','nullable'],
             'poslovnagodina'=>['nullable','date_format:Y'],
             'objekat'=>['required','string'],
-            'stampacid'=>['required','numeric'],
+            'fiskalni'=>['required','string'],
         ]);
         $pdv=\request('pdv') ? true : false ;
         Firma::create([
             'Naziv'=>$attributes['naziv'],
             'Adresa'=>$attributes['adresa'],
+            'Mesto'=>$attributes['mesto'],
             'PIB'=>$attributes['pib'],
             'MaticniBroj'=>$attributes['maticnibroj'],
             'TekuciRacun'=>$attributes['tekuciracun'],
@@ -46,7 +50,7 @@ class FirmaController extends Controller
             'Faks'=>$attributes['faks'],
             'PoslovnaGodina'=>$attributes['poslovnagodina'] ?? date("Y"),
             'Objekat'=>$attributes['objekat'],
-            'StampacID'=>$attributes['stampacid'],
+            'FiskalniStampac'=>$attributes['fiskalni'],
             'PDV'=>$pdv
         ]);
         return Redirect::route('indexFirma');
@@ -54,7 +58,7 @@ class FirmaController extends Controller
 
     public function edit(Firma $firma)
     {
-        return view('firme.editfirme',['firme'=>Firma::all(),'firma'=>$firma,'stampaci'=>Stampac::all()]);
+        return view('firme.editfirme',['firme'=>Firma::all(),'firma'=>$firma,'fiskalniStampaci'=>$this->fiskalni]);
     }
 
     public function update(Firma $firma)
@@ -62,6 +66,7 @@ class FirmaController extends Controller
         $attributes=\request()->validate([
             'naziv'=>['required','string','max:40','min:1'],
             'adresa'=>['required','string','max:40','min:1'],
+            'mesto'=>['required','string','max:40','min:1'],
             'pib'=>['required','numeric'],
             'maticnibroj'=>['required','numeric','digits:8'],
             'tekuciracun'=>['required','numeric','digits:18'],
@@ -70,12 +75,13 @@ class FirmaController extends Controller
             'faks'=>['numeric','string','nullable'],
             'poslovnagodina'=>['nullable','date_format:Y'],
             'objekat'=>['required','string'],
-            'stampacid'=>['required','numeric'],
+            'fiskalni'=>['required','string'],
         ]);
         $pdv=\request('pdv') ? true : false ;
         $firma->update([
             'Naziv'=>$attributes['naziv'],
             'Adresa'=>$attributes['adresa'],
+            'Mesto'=>$attributes['mesto'],
             'PIB'=>$attributes['pib'],
             'MaticniBroj'=>$attributes['maticnibroj'],
             'TekuciRacun'=>$attributes['tekuciracun'],
@@ -84,7 +90,7 @@ class FirmaController extends Controller
             'Faks'=>$attributes['faks'],
             'PoslovnaGodina'=>$attributes['poslovnagodina'] ?? date("Y"),
             'Objekat'=>$attributes['objekat'],
-            'StampacID'=>$attributes['stampacid'],
+            'FiskalniStampac'=>$attributes['fiskalni'],
             'PDV'=>$pdv
         ]);
         return Redirect::route('indexFirma');

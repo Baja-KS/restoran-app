@@ -8,9 +8,21 @@ use Illuminate\Support\Facades\Redirect;
 
 class StampacController extends Controller
 {
+//    private $akcije=['sank','kuhinja','racun','firma'];
+//
+//    private function dostupneAkcije()
+//    {
+//        $dostupneAkcije=[];
+//
+//        foreach ($this->akcije as $akcija)
+//        {
+//
+//        }
+//    }
+
     public function index()
     {
-        return view('stampaci.createstampaci',['stampaci'=>Stampac::all(),'akcije'=>['sank','kuhinja','racun','firma']]);
+        return view('stampaci.createstampaci',['stampaci'=>Stampac::all(),'dostupniStampaci'=>Stampac::dostupniStampaci(),'akcije'=>Stampac::dostupneAkcije()]);
     }
 
     public function store()
@@ -28,7 +40,7 @@ class StampacController extends Controller
 
     public function edit(Stampac $stampac)
     {
-        return view('stampaci.editstampaci',['stampaci'=>Stampac::all(),'stampac'=>$stampac,'akcije'=>['sank','kuhinja','racun','firma']]);
+        return view('stampaci.editstampaci',['stampaci'=>Stampac::all(),'dostupniStampaci'=>Stampac::dostupniStampaci(),'stampac'=>$stampac,'akcije'=>Stampac::dostupneAkcije()]);
     }
 
     public function update(Stampac $stampac)

@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use phpDocumentor\Reflection\Types\This;
 
 class Stampac extends Model
 {
@@ -11,9 +12,47 @@ class Stampac extends Model
     protected $guarded=[];
     public $timestamps=false;
 
-    public function firme()
+
+
+//    public function firme()
+//    {
+//        return $this->hasMany(Firma::class,'StampacID','StampacID');
+//    }
+
+    public static function dostupniStampaci()
     {
-        return $this->hasMany(Firma::class,'StampacID','StampacID');
+        $sh=shell_exec('lpstat -p -d');
+        $sharray=explode("\n",$sh);
+        array_pop($sharray);
+        array_pop($sharray);
+        $printers=[];
+        foreach ($sharray as $shitem)
+        {
+            $shitem=explode(" ",$shitem);
+            if (count($shitem)<6)
+                continue;
+            $printer=$shitem[1];
+            $status=$shitem[5];
+            if ($status!=='disabled' and $shitem[3]==='idle.')
+            {
+                $printers[]=$printer;
+            }
+        }
+        return $printers;
+    }
+
+    public static function dostupneAkcije()
+    {
+        $akcije=['sank','kuhinja','racun','firma'];
+        $dostupne=[];
+        foreach ($akcije as $akcija)
+        {
+            if (Stampac::where('AkcijaStampaca',$akcija)->count()==0)
+            {
+                $dostupne[]=$akcija;
+            }
+        }
+        return $dostupne;
     }
 
     public static function sank()

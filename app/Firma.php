@@ -10,10 +10,10 @@ class Firma extends Model
     protected $primaryKey='FirmaID';
     protected $guarded=[];
 
-    public function stampac()
-    {
-        return $this->belongsTo(Stampac::class,'StampacID','StampacID');
-    }
+//    public function stampac()
+//    {
+//        return $this->belongsTo(Stampac::class,'StampacID','StampacID');
+//    }
 
 //    public function aktiviraj()
 //    {
