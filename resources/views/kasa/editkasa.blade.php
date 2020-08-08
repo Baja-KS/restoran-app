@@ -3,6 +3,7 @@
 @section('stavke')
     <thead>
     <th></th>
+    <th></th>
     <th>Broj racuna</th>
     <th>Naziv</th>
     <th>Kolicina</th>
@@ -11,12 +12,12 @@
     <tbody id="dodatestavke">
         @foreach($racuni as $racun)
             @foreach($racun->stavke as $stavka)
-                <tr class="racunRedUnselectable unselectable text-danger" id="">
+                <tr class="racunRedUnselectable unselectable text-danger" id="tr{{$index++}}">
                     <td></td>
                     <td></td>
                     <td><h6>{{$stavka->artikal->Naziv}}</h6></td>
-                    <td><h6>{{$stavka->Kolicina}}</h6></td>
-                    <td><h6>{{$stavka->artikal->magacin->ZadnjaProdajnaCena}}</h6></td>
+                    <td><h6 class="kolicinastavke">{{$stavka->Kolicina}}</h6></td>
+                    <td><h6 class="cena">{{$stavka->cenaSaPopustom()}}</h6></td>
                 </tr>
                 @if($loop->last)
                     <tr style="border-bottom: 2px solid red">
@@ -32,12 +33,12 @@
     </tbody>
     <script>
         $(document).ready(function () {
-            $("#bezPopusta").val({{$bezPopusta}})
+            {{--$("#bezPopusta").val({{$bezPopusta}})--}}
 
             $("#brisisve").click(function () {
                 $('.racunRed :not(.unselectable)').remove();
-                $("#bezPopusta").val({{$bezPopusta}})
-                popust()
+                $("#ukupnaCena").val({{$ukupno}})
+                // popust()
             })
         })
     </script>

@@ -38,6 +38,15 @@ class OtvorenRacun extends Model
         return self::racuniZaSto($sto)->sum('UkupnaCena');
     }
 
+    public function UkupnaCena()
+    {
+        $ukupno=0;
+        foreach ($this->stavke as $stavka)
+        {
+            $ukupno+=$stavka->cenaSaPopustom();
+        }
+        return $ukupno;
+    }
     public function zaSank()
     {
         $zaSank=collect([]);
@@ -72,7 +81,6 @@ class OtvorenRacun extends Model
             'Radnik'=>$this->Radnik,
             'Napomena'=>$this->Napomena,
             'UkupnaCena'=>$this->UkupnaCena,
-            'Popust'=>$this->Popust,
             'NacinPlacanja'=>$nacinPlacanja
         ]);
         $noviRacun=ZatvorenRacun::where('Sto',$this->Sto)->latest()->first();
@@ -81,9 +89,18 @@ class OtvorenRacun extends Model
             ZatvorenRacunStavka::create([
                 'brRacuna'=>$noviRacun->brojRacuna,
                 'Artikal'=>$stavka->Artikal,
-                'Kolicina'=>$stavka->Kolicina
+                'Kolicina'=>$stavka->Kolicina,
+                'Popust'=>$stavka->Popust
             ]);
+            $stavka->artikal->magacin->prodaj($stavka->Kolicina);
         }
+        OtvorenRacun::destroy($this->brojRacuna);
+    }
+
+    public function naplati()
+    {
+        foreach ($this->stavke as $stavka)
+            $stavka->artikal->magacin->prodaj($stavka->Kolicina);
         OtvorenRacun::destroy($this->brojRacuna);
     }
 }

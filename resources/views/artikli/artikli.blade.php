@@ -17,6 +17,7 @@
                 <th>Poreska Stopa</th>
                 <th>Na Stanju</th>
                 <th>Normativ</th>
+                <th>Aktivan</th>
             </tr>
             </thead>
             @endif
@@ -28,18 +29,15 @@
                     <td><h4>{{$artikal->podkategorija->glavnaKategorija->Naziv}}</h4></td>
                     <td><h4>{{$artikal->jedinicamere->Naziv}}</h4></td>
                     <td><h4>{{$artikal->poreskastopa->Vrednost}}%</h4></td>
-                    @if(!$artikal->Normativ)
                     <td><h4>{{$artikal->magacin->naStanju()}}</h4></td>
-                    @else
-                    <td><h4>-</h4></td>
-                    @endif
                     <td><h4>{{$artikal->Normativ? "Da" : "Ne"}}</h4></td>
+                    <td><h4>{{$artikal->Aktivan? "Da" : "Ne"}}</h4></td>
                     <td><a href="{{route('editArtikal',$artikal->PLUKod)}}" class="btn btn-warning">Edit</a></td>
-                    <td><form action="{{route('destroyArtikal',$artikal->PLUKod)}}" method="POST">
+                    {{--<td><form action="{{route('destroyArtikal',$artikal->PLUKod)}}" method="POST">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-danger">Delete</button>
-                        </form></td>
+                        </form></td>--}}
                 </tr>
             @empty
                 <p>Nema nijednog artikla</p>

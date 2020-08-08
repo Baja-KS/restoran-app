@@ -66,7 +66,7 @@ Route::middleware('auth')->group(function (){
     Route::post('/artikli/dodaj','ArtikalController@store')->name('storeArtikal');
     Route::get('/artikli/{artikal:PLUKod}/edit','ArtikalController@edit')->name('editArtikal');
     Route::patch('/artikli/{artikal:PLUKod}','ArtikalController@update')->name('updateArtikal');
-    Route::delete('/artikli/{artikal:PLUKod}','ArtikalController@destroy')->name('destroyArtikal');
+//    Route::delete('/artikli/{artikal:PLUKod}','ArtikalController@destroy')->name('destroyArtikal'); Izbaceno,artikli se ne brisu
     Route::get('/artikli/grupe','GrupaAjaxController@show')->name('showGrupa');
 
     //vrste dokumenta
@@ -121,7 +121,7 @@ Route::middleware('auth')->group(function (){
     Route::get('/kasa/{sto}/{greska?}','KasaController@create')->name('createKasa');//sto bez prethodne porduzbine
     Route::post('/kasa/{sto}/noviracun','KasaController@store')->name('storeKasa');//BACKEND pamti porudzbinu i stampa naloge kuhinji i sanku ili zatvara racun
     Route::get('/kasaedit/{sto}/{greska?}','KasaController@edit')->name('editKasa');//sto sa prethodnom porudzbinom
-    Route::get('/kasanaplata/{sto}','KasaController@naplata')->name('naplataKasa');//otvara formu za naplatu
+//    Route::get('/kasanaplata/{sto}','KasaController@naplata')->name('naplataKasa');//otvara formu za naplatu,Izbaceno
     Route::delete('/kasanaplata/{sto}/naplati','KasaController@naplati')->name('naplatiKasa');//BACKEND brise porudzbinu iz baze,stampa racun,i pise isti u dokumenta
 
 

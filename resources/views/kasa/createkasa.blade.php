@@ -4,6 +4,8 @@
     <thead>
     <th></th>
     <th></th>
+    <th></th>
+    <th></th>
     <th>Naziv</th>
     <th>Kolicina</th>
     <th>Cena</th>

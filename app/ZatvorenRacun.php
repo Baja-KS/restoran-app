@@ -23,4 +23,13 @@ class ZatvorenRacun extends Model
     {
         return $this->belongsTo(User::class,'Radnik','PK');
     }
+    public function UkupnaCena()
+    {
+        $ukupno=0;
+        foreach ($this->stavke as $stavka)
+        {
+            $ukupno+=$stavka->cenaSaPopustom();
+        }
+        return $ukupno;
+    }
 }

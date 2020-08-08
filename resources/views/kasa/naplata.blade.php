@@ -30,9 +30,9 @@
             @csrf
             @method('DELETE')
             <div id="naplataButtons" class="naplataSporedno">
-                <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" value="gotovina">Gotovina</button>
-                <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" value="cek">Cek</button>
-                <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" value="kartica">Kartica</button>
+                <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" id="gotovina" value="gotovina">Gotovina</button>
+                <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" id="cek" value="cek">Cek</button>
+                <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" id="kartica" value="kartica">Kartica</button>
             </div>
 
 
@@ -66,7 +66,8 @@
             </div>
 
             <div id="naplataNazad" class="naplataSporedno">
-                <a href="{{route('editKasa',$sto)}}" class="btn my-5 btn-warning">Nazad</a>
+{{--                <a href="{{route('editKasa',$sto)}}" class="btn my-5 btn-warning">Nazad</a>--}}
+                <button type="submit" name="placanje" value="nazad" class="btn my-5 btn-warning">Nazad</button>
             </div>
 
         </form>
@@ -82,12 +83,18 @@
             })
             if (stampanjefirma.is(':checked')) {
                 firmapolja.show();
+                $("#gotovina").hide()
+                $("#kartica").hide()
             }
             else {
                 firmapolja.hide()
+                $("#gotovina").show()
+                $("#kartica").show()
             }
             stampanjefirma.change(function () {
                 firmapolja.toggle()
+                $("#gotovina").toggle()
+                $("#kartica").toggle()
             })
         })
     </script>

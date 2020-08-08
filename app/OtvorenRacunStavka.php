@@ -19,4 +19,11 @@ class OtvorenRacunStavka extends Model
     {
         return $this->belongsTo(Artikal::class,'Artikal','PLUKod');
     }
+
+    public function cenaSaPopustom()
+    {
+        $popust=$this->Popust;
+        $cena=$this->artikal->magacin->ZadnjaProdajnaCena;
+        return $cena-($popust/100*$cena);
+    }
 }

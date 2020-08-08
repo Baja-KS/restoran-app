@@ -128,8 +128,8 @@ class KasaController extends Controller
                 $fpdf->Cell(15, 5, $stavka->artikal->Naziv, 0, 1, 'L');
 
                 $fpdf->Cell(5, 5, $stavka->Kolicina . 'x', 0, 0, 'L');
-                $fpdf->Cell(10, 5, $stavka->artikal->magacin->ZadnjaProdajnaCena, 0, 0, 'L');
-                $fpdf->Cell(10, 5, ($stavka->Kolicina * $stavka->artikal->magacin->ZadnjaProdajnaCena), 0, 1, 'R');
+                $fpdf->Cell(10, 5, $stavka->cenaSaPopustom(), 0, 0, 'L');
+                $fpdf->Cell(10, 5, ($stavka->Kolicina * $stavka->cenaSaPopustom()), 0, 1, 'R');
             }
         }
 //        $fpdf->Line(5,$visina,55,$visina);
@@ -149,7 +149,7 @@ class KasaController extends Controller
         }
 
         $fpdf->Cell(15,5,'Povracaj: ',0,0,'L');
-        $fpdf->Cell(10,5,'0',0,1,'R');
+        $fpdf->Cell(10,5,($nacinPlacanja=='Gotovina' ? $placeno-$racuni->sum('UkupnaCena') : 0),0,1,'R');
 
         $fpdf->Output('F','racun.pdf',true);
 //            exec('lp -d '.$stampac->AkcijaStampaca.' racun.pdf');
@@ -331,28 +331,32 @@ class KasaController extends Controller
             'sto'=>$sto,
             'komitenti'=>$komitenti,
             'greska'=>$greska,
-            'ukupno'=>null
+            'ukupno'=>null,
+            'index'=>0
         ]);
     }
 
     public function store($sto)
     {
-//        Log::info(\request());
+//        Log::info(\request('popuststavke'));
+//        ddd(\request('popuststavke'));
         $size=count(\request('stavkaid') ?? []);
+        $popuststavke=[];
         $ukupnaCena=0;
-        if ($size==0 and \request()->input('akcija')==='poruci')
+        Log::info(\request('stavka'));
+        if ($size==0 and (\request()->input('akcija')==='poruci' or (\request()->input('akcija')==='naplata') and !OtvorenRacun::all()->count()))
         {
             return Redirect::route('home');
         }
         else
         {
-            for ($i=0;$i<$size;$i++)
+            /*for ($i=0;$i<$size;$i++)
             {
                 $artikal=Artikal::where('PLUKod',\request('stavkaid')[$i])->first();
                 $kolicina=\request('stavkakolicina')[$i];
 
 
-                $rezervisanaKolicina=(OtvorenRacunStavka::where('Artikal',$artikal->PLUKod)->sum('Kolicina') ?? 0) + (ZatvorenRacunStavka::where('Artikal',$artikal->PLUKod)->sum('Kolicina') ?? 0);
+                $rezervisanaKolicina=OtvorenRacunStavka::where('Artikal',$artikal->PLUKod)->sum('Kolicina') ?? 0;
                 if ($rezervisanaKolicina + $kolicina > $artikal->magacin->naStanju())
                 {
                     if (OtvorenRacun::brojRacunaZaSto($sto)>0)
@@ -363,14 +367,18 @@ class KasaController extends Controller
                 }
 
 
-            }
-            for ($i=0;$i<$size;$i++)
+            }*/
+            /*for ($i=0;$i<$size;$i++)
             {
                 $artikal=Artikal::where('PLUKod',\request('stavkaid')[$i])->first();
                 $cena=$artikal->magacin->ZadnjaProdajnaCena;
+//                Log::info($cena);
+                $popuststavke[]=\request('popuststavke')[$i];
+                $cena-=(\request('popuststavke')[$i]/100*$cena);
+                Log::info(\request('popuststavke')[$i]);
                 $kolicina=\request('stavkakolicina')[$i];
                 $ukupnaCena+=$cena*$kolicina;
-            }
+            }*/
         }
 
         $attributes=\request()->validate([
@@ -380,33 +388,37 @@ class KasaController extends Controller
 //            'popust'=>['numeric'],
             'napomena'=>['string','nullable'],
         ]);
-        $popust=\request('popust') ?? 0;
-        if ($attributes['gost'] and !\request('popust'))
-        {
-            $popust=Komitent::where('Sifra',$attributes['gost'])->pluck('Popust')->first();
-        }
-        $ukupnaCena-=($popust/100*$ukupnaCena);
+//        $popust=\request('popust') ?? 0;
+//        if ($attributes['gost'] and !\request('popust'))
+//        {
+//            $popust=Komitent::where('Sifra',$attributes['gost'])->pluck('Popust')->first();
+//        }
+//        $ukupnaCena-=($popust/100*$ukupnaCena);
         OtvorenRacun::create([
             'Sto'=>$sto,
             'Gost'=>$attributes['gost'],
             'Radnik'=>auth()->user()->PK,
             'Napomena'=>$attributes['napomena'],
-            'UkupnaCena'=>$ukupnaCena,
-            'Popust'=>$popust
+            'UkupnaCena'=>0,
         ]);
         $noviRacun=OtvorenRacun::where('Sto',$sto)->latest()->first();
-
+        $popuststavke=\request('popuststavke');
         for ($i=0;$i<$size;$i++)
         {
             OtvorenRacunStavka::create([
                 'brRacuna'=>$noviRacun->brojRacuna,
                 'Artikal'=>\request('stavkaid')[$i],
-                'Kolicina'=>\request('stavkakolicina')[$i]
+//                'Kolicina'=>\request('stavkakolicina')[$i]-$popust,
+                'Kolicina'=>\request('stavkakolicina')[$i],
+                'Popust'=>$popuststavke[$i]
             ]);
         }
-
+        $noviRacun->update(['UkupnaCena'=>$noviRacun->UkupnaCena()]);
+        if (\request()->input('akcija')==='naplata')
+            return $this->naplata($sto);
         if (\request()->input('akcija')!=='poruci')
         {
+
             $nacinPlacanja='';
             switch (\request()->input('akcija'))
             {
@@ -435,11 +447,11 @@ class KasaController extends Controller
         $radnik=auth()->user();
         $komitenti=Komitent::all();
         $racuni=OtvorenRacun::where('Sto',$sto)->get();
-        $bezPopusta=0;
-        foreach ($racuni as $racun)
-        {
-            $bezPopusta+=(100*$racun->UkupnaCena)/(100-$racun->Popust);
-        }
+//        $bezPopusta=0;
+//        foreach ($racuni as $racun)
+//        {
+//            $bezPopusta+=(100*$racun->UkupnaCena)/(100-$racun->Popust);
+//        }
         return view('kasa.editkasa',[
             'kategorije'=>$kategorije,
             'radnik'=>$radnik,
@@ -448,7 +460,8 @@ class KasaController extends Controller
             'racuni'=>$racuni,
             'greska'=>$greska,
             'ukupno'=>$racuni->sum('UkupnaCena'),
-            'bezPopusta'=>$bezPopusta
+//            'bezPopusta'=>$bezPopusta,
+            'index'=>0
         ]);
     }
 
@@ -468,8 +481,12 @@ class KasaController extends Controller
     {
         $nacinPlacanja="";
         $attributes=[];
+        $zadnjiRacun=OtvorenRacun::all()->last();
         switch (\request()->input('placanje'))
         {
+            case 'nazad':
+                OtvorenRacun::destroy($zadnjiRacun->brojRacuna);
+                return Redirect::route('editKasa',$sto);
             case 'gotovina':
                 $nacinPlacanja='Gotovina';
                 $attributes=\request()->validate([
@@ -489,23 +506,18 @@ class KasaController extends Controller
         {
             if ($attributes['uplata']<\request('ukupno'))
                 return Redirect::route('editKasa',[$sto,'Nedovoljno sredstava']);
-            if (\request('stampanjefirma'))
-                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
+//            if (\request('stampanjefirma'))
+//                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
             $this->izdajRacun($racuni,$nacinPlacanja,$attributes['uplata']);
         }
         else {
             if (\request('stampanjefirma'))
-                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
+                $this->izdajRacunFirma($racuni,'Cek',\request('firma'),$brojIsecka);
             $this->izdajRacun($racuni, $nacinPlacanja);
         }
         foreach ($racuni as $racun)
-        {
-            foreach ($racun->stavke as $stavka)
-            {
-                $stavka->artikal->magacin->prodaj($stavka->Kolicina);
-            }
-            OtvorenRacun::destroy($racun->brojRacuna);
-        }
+            $racun->naplati();
+
         return Redirect::route('home');
 
     }
@@ -514,10 +526,7 @@ class KasaController extends Controller
     {
         $racuni=OtvorenRacun::where('Sto',$sto)->get();
         foreach ($racuni as $racun)
-        {
             $racun->zatvori($nacinPlacanja);
-        }
-
         return Redirect::route('home');
     }
 
