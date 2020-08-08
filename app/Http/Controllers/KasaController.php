@@ -56,7 +56,7 @@ class KasaController extends Controller
             }
 //        $fpdf->IncludeJS("print();");
             $fpdf->Output('F','sank.pdf',true);
-            exec('lp -d '.$stampac->AkcijaStampaca.' sank.pdf');
+            exec('lp -d '.$stampac->Naziv.' sank.pdf');
 //        return Redirect::route('home');
 //        exit();
         }
@@ -93,7 +93,7 @@ class KasaController extends Controller
             }
 //        $fpdf->IncludeJS("print();");
             $fpdf->Output('F','kuhinja.pdf',true);
-            exec('lp -d '.$stampac->AkcijaStampaca.' kuhinja.pdf');
+            exec('lp -d '.$stampac->Naziv.' kuhinja.pdf');
 //            $opSys=php_uname('s');
 //            if ($opSys=='Linux')
 //                exec('lp -d kuhinja kuhinja.pdf');
@@ -153,7 +153,7 @@ class KasaController extends Controller
 
         $fpdf->Output('F','racun.pdf',true);
 //            exec('lp -d '.$stampac->AkcijaStampaca.' racun.pdf');
-        exec('lp racun.pdf');
+        exec('lp -d '.$stampac->Naziv.' racun.pdf');
     }
 
     private function izdajRacunFirma($racuni,$nacinPlacanja,$firma,$brIsecka)
@@ -304,7 +304,7 @@ class KasaController extends Controller
 
         $fpdf->Output('F','firma.pdf',true);
 //            exec('lp -d '.$stampac->AkcijaStampaca.' racun.pdf');
-        exec('lp firma.pdf');
+        exec('lp -d '.$stampac->Naziv.' firma.pdf');
 
 
 
