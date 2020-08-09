@@ -103,7 +103,7 @@ class KasaController extends Controller
         }
 
     }
-    private function izdajRacun($racuni,$nacinPlacanja,$placeno=null)
+    private function izdajRacun($racuni,$nacinPlacanja,$placeno=null,$preview=false)
     {
         $stampac=Stampac::racun();
         $firma=Firma::all()->first();
@@ -137,26 +137,37 @@ class KasaController extends Controller
         $fpdf->Cell(15,5,'Za uplatu: ',0,0,'L');
         $fpdf->Cell(10,5,$racuni->sum('UkupnaCena'),0,1,'R');
 
-        if ($nacinPlacanja=='Gotovina')
+        if ($preview)
         {
-            $fpdf->Cell(15,5,'Uplaceno: ',0,0,'L');
-            $fpdf->Cell(10,5,$placeno,0,1,'R');
+//            if ($nacinPlacanja == 'Gotovina') {
+//                $fpdf->Cell(15, 5, 'Uplaceno: ', 0, 1, 'L');
+////                $fpdf->Cell(10, 5, $placeno, 0, 1, 'R');
+//            } else {
+//                $fpdf->Cell(15, 5, $nacinPlacanja . ': ', 0, 0, 'L');
+////                $fpdf->Cell(10, 5, $racuni->sum('UkupnaCena'), 0, 1, 'R');
+//            }
+            $fpdf->Output('F', 'racunpreview.pdf', true);
         }
         else
         {
-            $fpdf->Cell(15,5,$nacinPlacanja.': ',0,0,'L');
-            $fpdf->Cell(10,5,$racuni->sum('UkupnaCena'),0,1,'R');
-        }
+            if ($nacinPlacanja == 'Gotovina') {
+                $fpdf->Cell(15, 5, 'Uplaceno: ', 0, 0, 'L');
+                $fpdf->Cell(10, 5, $placeno, 0, 1, 'R');
+            } else {
+                $fpdf->Cell(15, 5, $nacinPlacanja . ': ', 0, 0, 'L');
+                $fpdf->Cell(10, 5, $racuni->sum('UkupnaCena'), 0, 1, 'R');
+            }
 
-        $fpdf->Cell(15,5,'Povracaj: ',0,0,'L');
-        $fpdf->Cell(10,5,($nacinPlacanja=='Gotovina' ? $placeno-$racuni->sum('UkupnaCena') : 0),0,1,'R');
+            $fpdf->Cell(15, 5, 'Povracaj: ', 0, 0, 'L');
+            $fpdf->Cell(10, 5, ($nacinPlacanja == 'Gotovina' ? $placeno - $racuni->sum('UkupnaCena') : 0), 0, 1, 'R');
 
-        $fpdf->Output('F','racun.pdf',true);
+            $fpdf->Output('F', 'racun.pdf', true);
 //            exec('lp -d '.$stampac->AkcijaStampaca.' racun.pdf');
-        exec('lp -d '.$stampac->Naziv.' racun.pdf');
+            exec('lp -d ' . $stampac->Naziv . ' racun.pdf');
+        }
     }
 
-    private function izdajRacunFirma($racuni,$nacinPlacanja,$firma,$brIsecka)
+    private function izdajRacunFirma($racuni,$nacinPlacanja,$firma,$brIsecka,$preview=false)
     {
         $stampac=Stampac::firma();
         $firma=Komitent::where('Sifra',$firma)->first();
@@ -243,7 +254,7 @@ class KasaController extends Controller
         $fpdf->Cell(100,10,'Gotovinski racun',0,0,'L');
         $fpdf->SetFont('Arial','B',10);
         $fpdf->Cell(40,10,'Broj fiskalnog isecka: ',0,0,'L');
-        $fpdf->Cell(20,10,$brIsecka,0,1,'R');
+        $fpdf->Cell(20,10,($preview ? "" : $brIsecka),0,1,'R');
 
         $fpdf->SetX(10);
         $fpdf->SetFont('Arial','B',10);
@@ -268,10 +279,10 @@ class KasaController extends Controller
                 $fpdf->Cell(40,10,$stavka->artikal->Naziv,'B',0,'L');
                 $fpdf->Cell(10,10,$stavka->artikal->jedinicamere->Naziv,'B',0,'L');
                 $fpdf->Cell(10,10,$stavka->Kolicina,'B',0,'L');
-                $fpdf->Cell(30,10,$stavka->artikal->magacin->ZadnjaProdajnaCena,'B',0,'L');
+                $fpdf->Cell(30,10,$stavka->cenaSaPopustom(),'B',0,'L');
                 $fpdf->Cell(20,10,'0','B',0,'L');
                 $fpdf->Cell(20,10,$stavka->artikal->poreskastopa->Vrednost,'B',0,'L');
-                $fpdf->Cell(20,10,$stavka->artikal->PDV(),'B',1,'L');
+                $fpdf->Cell(20,10,round(Artikal::bezPDVa($stavka->cenaSaPopustom(),$stavka->artikal->poreskastopa->Vrednost),2),'B',1,'L');
             }
         }
 
@@ -285,7 +296,7 @@ class KasaController extends Controller
         $fpdf->SetFont('Arial','B',10);
         $fpdf->Cell(40,10,'Iznos PDV:  '.($firma->PDV ? '20%' : '0%'),'TLR',1,'L');
         $fpdf->SetX(40);
-        $fpdf->Cell(40,10,'Vrednost sa PDV:  '.($firma->PDV ? ($racuni->sum('UkupnaCena')+($racuni->sum('UkupnaCena')*20/100)) : $racuni->sum('UkupnaCena')),'BLR',1,'L');
+        $fpdf->Cell(40,10,'Vrednost sa PDV:  '.$racuni->sum('UkupnaCena'),'BLR',1,'L');
 
         $fpdf->SetFont('Arial','I','10');
         $fpdf->Cell(40,20,'Napomena: '.$racuni->first()->Napomena ?? '',0,1,'L');
@@ -299,12 +310,16 @@ class KasaController extends Controller
         $fpdf->Line(30,250,70,250);
         $fpdf->Line(140,250,180,250);
 
-
-
-
-        $fpdf->Output('F','firma.pdf',true);
+        if ($preview)
+        {
+            $fpdf->Output('F','firmapreview.pdf',true);
+        }
+        else
+        {
+            $fpdf->Output('F', 'firma.pdf', true);
 //            exec('lp -d '.$stampac->AkcijaStampaca.' racun.pdf');
-        exec('lp -d '.$stampac->Naziv.' firma.pdf');
+            exec('lp -d ' . $stampac->Naziv . ' firma.pdf');
+        }
 
 
 
@@ -319,6 +334,65 @@ class KasaController extends Controller
         return Redirect::route('home');
     }
 
+    private function formatirajRacun($path,$nacinPlacanja,$placeno,$racuni,Firma $firma)
+    {
+        $ext='';
+        $text='';
+        $stavke=collect([]);
+        foreach ($racuni as $racun)
+            $stavke=$stavke->merge($racun->stavke);
+        switch ($firma->FiskalniStampac)
+        {
+            case 'GENEKO':
+                $ext='.gnk';
+                break;
+            case 'WINGS':
+                $ext='.wng';
+                $text.="#FISKAL\n";
+                foreach ($stavke as $stavka)
+                    $text.=$stavka->artikal->PLUKod."\t".$stavka->artikal->Naziv."\t".$stavka->artikal->jedinicamere->Naziv."\t".$stavka->Kolicina."\t".round($stavka->cenaSaPopustom(),2)."\t".$stavka->artikal->PoreskaStopa."\n";
+                $text.="#PLACANJE\n";
+                $nacinPlacanjaStr='';
+                switch ($nacinPlacanja){
+                    case 'Gotovina':
+                        $nacinPlacanjaStr='GOTOVINA';
+                        break;
+                    case 'Cek':
+                        $nacinPlacanjaStr='CEKOVI';
+                        $placeno=round($racuni->sum('UkupnaCena'),2);
+                        break;
+                    case 'Kartica':
+                        $nacinPlacanjaStr='KARTICA';
+                        $placeno=round($racuni->sum('UkupnaCena'),2);
+                        break;
+                }
+                $text.=$nacinPlacanjaStr."\t".$placeno;
+                break;
+            case 'INTRASTER':
+                $ext='.inp';
+                foreach ($stavke as $stavka)
+                    $text.='S,1,______,_,__;'.$stavka->artikal->Naziv.';'.round($stavka->cenaSaPopustom(),2).';'.$stavka->Kolicina.';1;1;'.$stavka->artikal->PoreskaStopa.';0;'.$stavka->artikal->PLUKod.';'."\n";
+                $nacinPlacanjaBroj=0;
+                switch ($nacinPlacanja){
+                    case 'Gotovina':
+                        $nacinPlacanjaBroj=0;
+                        break;
+                    case 'Cek':
+                        $nacinPlacanjaBroj=1;
+                        $placeno=round($racuni->sum('UkupnaCena'),2);
+                        break;
+                    case 'Kartica':
+                        $nacinPlacanjaBroj=2;
+                        $placeno=round($racuni->sum('UkupnaCena'),2);
+                        break;
+                }
+                $text.='T,1,______,_,__;'.$nacinPlacanjaBroj.';'.'<'.$placeno.'>;;;;';
+                break;
+        }
+        $file=fopen($path.'/fiskalniracun'.$ext,'w');
+        fwrite($file,$text);
+        fclose($file);
+    }
 
     public function create($sto,$greska=null)
     {
@@ -410,12 +484,15 @@ class KasaController extends Controller
                 'Artikal'=>\request('stavkaid')[$i],
 //                'Kolicina'=>\request('stavkakolicina')[$i]-$popust,
                 'Kolicina'=>\request('stavkakolicina')[$i],
-                'Popust'=>$popuststavke[$i]
+                'Popust'=>$popuststavke[$i] ?? 0
             ]);
         }
         $noviRacun->update(['UkupnaCena'=>$noviRacun->UkupnaCena()]);
-        if (\request()->input('akcija')==='naplata')
+        if (\request()->input('akcija')==='naplata') {
+            $racuni=OtvorenRacun::where('Sto',$sto)->get();
+            $this->izdajRacun($racuni,'Gotovina',null,true);
             return $this->naplata($sto);
+        }
         if (\request()->input('akcija')!=='poruci')
         {
 
@@ -482,11 +559,15 @@ class KasaController extends Controller
         $nacinPlacanja="";
         $attributes=[];
         $zadnjiRacun=OtvorenRacun::all()->last();
+        $racuni=OtvorenRacun::where('Sto',$sto)->get();
         switch (\request()->input('placanje'))
         {
             case 'nazad':
                 OtvorenRacun::destroy($zadnjiRacun->brojRacuna);
                 return Redirect::route('editKasa',$sto);
+            case 'previewFirma':
+                $this->izdajRacunFirma($racuni,'Cek',\request('firma'),0,true);
+                return $this->naplata($sto);
             case 'gotovina':
                 $nacinPlacanja='Gotovina';
                 $attributes=\request()->validate([
@@ -509,11 +590,13 @@ class KasaController extends Controller
 //            if (\request('stampanjefirma'))
 //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
             $this->izdajRacun($racuni,$nacinPlacanja,$attributes['uplata']);
+            $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni',$nacinPlacanja,\request('uplata'),$racuni,Firma::all()->first());
         }
         else {
             if (\request('stampanjefirma'))
                 $this->izdajRacunFirma($racuni,'Cek',\request('firma'),$brojIsecka);
             $this->izdajRacun($racuni, $nacinPlacanja);
+            $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni/',$nacinPlacanja,0,$racuni,Firma::all()->first());
         }
         foreach ($racuni as $racun)
             $racun->naplati();

@@ -32,6 +32,8 @@ class StavkaMagacina extends Model
                 $kolicinaUMesavini=Artikal::kolicinaUMesavini($artikal,$komponenta);
                 $sadrzajKomponenta[]=($naStanjuKomponenta/$kolicinaUMesavini);
             }
+            if (count($sadrzajKomponenta)==0)
+                return $this->KolicinaUlaza - $this->KolicinaIzlaza;
             return min($sadrzajKomponenta);
 
         }

@@ -62,16 +62,25 @@
                     </select>
                     <label for="brisecka" class="text-light">Broj Isecka</label>
                     <input type="text" name="brisecka" id="brisecka">
+                    <button type="submit" name="placanje" class="btn btn-success" value="previewFirma">Napravi fakturu</button>
+                    <a id="#pregledfaktura" href="/Restoran/public/firmapreview.pdf" target="_blank" class="btn btn-success">Pregledaj fakturu</a>
+                </div>
+                <div id="naplataNazad" class="naplataSporedno">
+                    {{--                <a href="{{route('editKasa',$sto)}}" class="btn my-5 btn-warning">Nazad</a>--}}
+                    <button type="submit" name="placanje" value="nazad" class="btn my-5 btn-warning">Nazad</button>
                 </div>
             </div>
 
-            <div id="naplataNazad" class="naplataSporedno">
-{{--                <a href="{{route('editKasa',$sto)}}" class="btn my-5 btn-warning">Nazad</a>--}}
-                <button type="submit" name="placanje" value="nazad" class="btn my-5 btn-warning">Nazad</button>
+            <div id="preview">
+                <object data="/Restoran/public/racunpreview.pdf" type="application/pdf">
+                    alt : <a href="/Restoran/public/racunpreview.pdf">racunpreview.pdf</a>
+                </object>
             </div>
+
 
         </form>
     </div>
+
     <script>
         $(document).ready(function () {
             let ukupno=$("#ukupno").val()

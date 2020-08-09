@@ -41,6 +41,14 @@ class Artikal extends Model
     {
         return ($this->poreskastopa->Vrednost/100)*$this->magacin->ZadnjaProdajnaCena;
     }
+
+    public function bezPDV()
+    {
+        return (100*$this->magacin->ZadnjaProdajnaCena)/(100+$this->poreskastopa->Vrednost);
+    }
+    public static function bezPDVa($cena,$poreskaStopa){
+        return (100*$cena)/(100+$poreskaStopa);
+    }
     public static function trenutniPLUKod()
     {
         return Artikal::max('PLUKod') ?? 0;

@@ -402,12 +402,12 @@
             let id=$(this).val()
             let popust=$("#p"+id).val()
             $("#popust").val(popust)
-            $("#popust").prop('disabled',true)
+            // $("#popust").prop('disabled',true)
         }
         else
         {
             $("#popust").val(0)
-            $("#popust").prop('disabled',false)
+            // $("#popust").prop('disabled',false)
         }
         popustSve()
     })
