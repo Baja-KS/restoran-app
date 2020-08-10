@@ -123,6 +123,7 @@ Route::middleware('auth')->group(function (){
     Route::get('/kasaedit/{sto}/{greska?}','KasaController@edit')->name('editKasa');//sto sa prethodnom porudzbinom
 //    Route::get('/kasanaplata/{sto}','KasaController@naplata')->name('naplataKasa');//otvara formu za naplatu,Izbaceno
     Route::delete('/kasanaplata/{sto}/naplati','KasaController@naplati')->name('naplatiKasa');//BACKEND brise porudzbinu iz baze,stampa racun,i pise isti u dokumenta
+    Route::delete('/kasanaplatafirma/{sto}/naplati','KasaController@naplatiZaFirmu')->name('naplatiKasaFirma');
 
 
 

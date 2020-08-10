@@ -60,10 +60,10 @@
                             <option value="{{$komitent->Sifra}}" @foreach($racuni as $racun) @if(($racun->gost->Naziv ?? '/')==$komitent->Naziv) selected @endif @endforeach>{{$komitent->Naziv}}</option>
                         @endforeach
                     </select>
-                    <label for="brisecka" class="text-light">Broj Isecka</label>
-                    <input type="text" name="brisecka" id="brisecka">
-                    <button type="submit" name="placanje" class="btn btn-success" value="previewFirma">Napravi fakturu</button>
-                    <a id="#pregledfaktura" href="/Restoran/public/firmapreview.pdf" target="_blank" class="btn btn-success">Pregledaj fakturu</a>
+{{--                    <label for="brisecka" class="text-light">Broj Isecka</label>--}}
+{{--                    <input type="text" name="brisecka" id="brisecka">--}}
+{{--                    <button type="submit" name="placanje" class="btn btn-success" value="previewFirma">Napravi fakturu</button>--}}
+{{--                    <a id="#pregledfaktura" href="/Restoran/public/firmapreview.pdf" target="_blank" class="btn btn-success">Pregledaj fakturu</a>--}}
                 </div>
                 <div id="naplataNazad" class="naplataSporedno">
                     {{--                <a href="{{route('editKasa',$sto)}}" class="btn my-5 btn-warning">Nazad</a>--}}
@@ -71,11 +71,11 @@
                 </div>
             </div>
 
-            <div id="preview">
+            {{--<div id="preview">
                 <object data="/Restoran/public/racunpreview.pdf" type="application/pdf">
                     alt : <a href="/Restoran/public/racunpreview.pdf">racunpreview.pdf</a>
                 </object>
-            </div>
+            </div>--}}
 
 
         </form>
@@ -92,18 +92,18 @@
             })
             if (stampanjefirma.is(':checked')) {
                 firmapolja.show();
-                $("#gotovina").hide()
-                $("#kartica").hide()
+                // $("#gotovina").hide()
+                // $("#kartica").hide()
             }
             else {
                 firmapolja.hide()
-                $("#gotovina").show()
-                $("#kartica").show()
+                // $("#gotovina").show()
+                // $("#kartica").show()
             }
             stampanjefirma.change(function () {
                 firmapolja.toggle()
-                $("#gotovina").toggle()
-                $("#kartica").toggle()
+                // $("#gotovina").toggle()
+                // $("#kartica").toggle()
             })
         })
     </script>
