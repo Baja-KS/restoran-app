@@ -25,17 +25,18 @@ class CreateDokumentaTable extends Migration
 
             $table->integer('BrVezanogDok')->nullable();
 
-            $table->date('DatumDok');// datum
+            $table->timestamps();
+//            $table->date('DatumDok');// datum
+//
+//            $table->date('DatumDPO');// datum
 
-            $table->date('DatumDPO');// datum
+//            $table->time('Vreme');// vreme
 
-            $table->time('Vreme');// vreme
-
-            $table->foreignId('SifKom')
+            $table->foreignId('SifKom')->nullable()
             ->constrained('tblKomitenti','Sifra')
             ->cascadeOnUpdate();
 
-            $table->boolean('KomPDV');//redundantno
+//            $table->boolean('KomPDV');//redundantno
 
             $table->unsignedBigInteger('SifOj1');
 
@@ -53,10 +54,10 @@ class CreateDokumentaTable extends Migration
 
             $table->unsignedBigInteger('BrFiskal')->nullable();
 
-            $table->date('DatumF');
+            $table->date('DatumF');//za predracun rok placanja
             $table->time('VremeF');
 
-            $table->tinyInteger('IndikatorKnjizenja')->default(0);
+            $table->boolean('IndikatorKnjizenja')->default(false);
 
             $table->foreignId('Radnik')
             ->constrained('Users','PK')
@@ -71,6 +72,58 @@ class CreateDokumentaTable extends Migration
 
             $table->integer('Dan')->default(0);
         });
+        Schema::create('tblDokumentaStavke', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('IDDOK')
+                ->constrained('tblDokumenta','id')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
+            $table->foreignId('SifraRobe')
+                ->constrained('tblArtikli','PLUKod')
+                ->cascadeOnUpdate();
+
+            $table->float('Kolicina');
+            $table->float('NabCena');
+            $table->integer('Rabat');
+//            $table->float('RazlikaUCeni');
+            $table->float('ProdCena');
+//            $table->timestamp('DatumVreme');
+//            $table->date('Datum')->default(date('d-m-Y'));// datum
+//            $table->time('Vreme')->default(date('H:i'));// vreme
+            $table->boolean('Odstampano')->default(false);
+
+        });
+        /*Schema::create('tblPrometRobe', function (Blueprint $table) {
+            $table->id('StavkaPrometa');
+
+            $table->foreignId('BrojDokumentaID')
+                ->constrained('tblDokumenta','id')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
+            $table->unsignedBigInteger('BrojDokumenta');
+
+            $table->timestamp('DatumPrometa');
+
+            $table->unsignedBigInteger('SifraKomitenta');
+
+            $table->foreignId('SifraArtikla')
+                ->constrained('tblArtikli','PLUKod')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+
+            $table->float('Kolicina');
+            $table->float('Cena');
+//            $table->string('Transakcija',3);
+//            $table->integer('StopaPDV');
+            $table->integer('Rabat');
+            $table->integer('Prodavnica');
+            $table->float('NabavnaCena');
+            $table->float('ProsecnaCena');
+            $table->integer('Dan');
+        });*/
     }
 
     /**
@@ -80,6 +133,8 @@ class CreateDokumentaTable extends Migration
      */
     public function down()
     {
+//        Schema::dropIfExists('tblPrometRobe');
+        Schema::dropIfExists('tblDokumentaStavke');
         Schema::dropIfExists('tblDokumenta');
     }
 }

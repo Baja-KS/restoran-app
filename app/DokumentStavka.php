@@ -1,0 +1,48 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class DokumentStavka extends Model
+{
+    protected $table='tblDokumentaStavke';
+    protected $guarded=[];
+    public $timestamps=false;
+
+    public function dokument()
+    {
+        return $this->belongsTo(Dokument::class,'IDDOK','id');
+    }
+
+    public function artikal()
+    {
+        return $this->belongsTo(Artikal::class,'SifraRobe','PLUKod');
+    }
+
+    public function popust()
+    {
+
+        $saPopustom=$this->ProdCena;
+        $bezPopusta=$this->artikal->magacin->ZadnjaProdajnaCena;
+        if ($bezPopusta==0)
+            return 0;
+        return( 100*($bezPopusta-$saPopustom))/$bezPopusta;
+    }
+
+    public function profit()
+    {
+        if (!$this->artikal->Normativ)
+            return $this->Kolicina*($this->ProdCena-$this->artikal->magacin->ZadnjaNabavnaCena);
+        else
+        {
+            $nabavnaCena=0;
+            foreach ($this->artikal->komponente as $komponenta)
+            {
+                $kolicina=Artikal::kolicinaUMesavini($this->artikal,$komponenta);
+                $nabavnaCena+=$kolicina*$komponenta->magacin->ZadnjaNabavnaCena;
+            }
+            return $this->Kolicina*($this->ProdCena-$nabavnaCena);
+        }
+    }
+}

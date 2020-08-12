@@ -13,6 +13,6 @@ class OrganizacionaJedinica extends Model
 
     public function dokumenti()
     {
-        // veza sa Dokument TODO
+        return $this->hasMany(Dokument::class,'SifOj2','SifOj');
     }
 }

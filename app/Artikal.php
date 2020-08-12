@@ -91,9 +91,19 @@ class Artikal extends Model
         return 0;
     }
 
-    public function stavkeRacun()
+    public function stavkeOtvorenRacun()
     {
         return $this->hasMany(OtvorenRacunStavka::class,'Artikal','PLUKod');
+    }
+
+    public function stavkeZatvorenRacun()
+    {
+        return $this->hasMany(ZatvorenRacunStavka::class,'Artikal','PLUKod');
+    }
+
+    public function stavkeDokument()
+    {
+        return $this->hasMany(DokumentStavka::class,'SifraRobe','PLUKod');
     }
 
 }

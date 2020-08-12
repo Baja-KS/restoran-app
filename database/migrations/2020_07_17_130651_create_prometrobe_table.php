@@ -13,7 +13,7 @@ class CreatePrometrobeTable extends Migration
      */
     public function up()
     {
-        Schema::create('tblPrometRobeMP', function (Blueprint $table) {
+        Schema::create('tblPrometRobe', function (Blueprint $table) {
             $table->id('StavkaPrometa');
 
             $table->foreignId('BrojDokumentaID')
@@ -51,6 +51,6 @@ class CreatePrometrobeTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tblPrometRobeMP');
+        Schema::dropIfExists('tblPrometRobe');
     }
 }

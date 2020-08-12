@@ -623,6 +623,7 @@ class KasaController extends Controller
         else {
 //            if (\request('stampanjefirma'))
 //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
+            $uplata=\request('ukupno');
             $this->izdajRacun($racuni, $nacinPlacanja);
             $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni/',$nacinPlacanja,0,$racuni,Firma::all()->first());
         }
@@ -631,7 +632,7 @@ class KasaController extends Controller
             return $this->naplataZaFirmu($sto,$nacinPlacanja,\request('firma'));
 
         foreach ($racuni as $racun)
-            $racun->naplati();
+            $racun->naplati($nacinPlacanja,$uplata);
 
 //        $pos=strrpos($fullpath,'/') ?? 0;
 //        $fileName=substr($fullpath,$pos);
@@ -662,7 +663,7 @@ class KasaController extends Controller
         $racuni=OtvorenRacun::where('Sto',$sto)->get();
         $this->izdajRacunFirma($racuni,$nacinPlacanja,$firma,$brIsecka,false,$brPrimeraka);
         foreach ($racuni as $racun)
-            $racun->naplati();
+            $racun->naplati($nacinPlacanja,$racun->UkupnaCena,false,$brIsecka);
         return Redirect::route('home');
     }
 
@@ -670,7 +671,7 @@ class KasaController extends Controller
     {
         $racuni=OtvorenRacun::where('Sto',$sto)->get();
         foreach ($racuni as $racun)
-            $racun->zatvori($nacinPlacanja);
+            $racun->zatvori($nacinPlacanja,$racun->UkupnaCena);
         return Redirect::route('home');
     }
 

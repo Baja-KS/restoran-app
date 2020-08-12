@@ -125,6 +125,19 @@ Route::middleware('auth')->group(function (){
     Route::delete('/kasanaplata/{sto}/naplati','KasaController@naplati')->name('naplatiKasa');//BACKEND brise porudzbinu iz baze,stampa racun,i pise isti u dokumenta
     Route::delete('/kasanaplatafirma/{sto}/naplati','KasaController@naplatiZaFirmu')->name('naplatiKasaFirma');
 
+    //prodaja konobara
+    Route::get('/prodaja','ProdajaController@index')->name('indexProdajaKonobara');
+    Route::get('/prodaja/dnevna','ProdajaController@dnevna')->name('dnevnaProdajaKonobara');
+    Route::get('/prodaja/nedeljna','ProdajaController@nedeljna')->name('nedeljnaProdajaKonobara');
+    Route::get('/prodaja/mesecna','ProdajaController@mesecna')->name('mesecnaProdajaKonobara');
+
+    Route::middleware('can:admin')->group(function (){
+        Route::get('/prodaja/svi','ProdajaController@indexSvi')->name('indexProdajaSvihKonobara');
+        Route::get('/prodaja/dnevna/svi','ProdajaController@dnevnaSvi')->name('dnevnaProdajaSvihKonobara');
+        Route::get('/prodaja/nedeljna/svi','ProdajaController@nedeljnaSvi')->name('nedeljnaProdajaSvihKonobara');
+        Route::get('/prodaja/mesecna/svi','ProdajaController@mesecnaSvi')->name('mesecnaProdajaSvihKonobara');
+    });
+    Route::get('/prodaja/detalji/{dokument}','ProdajaController@show')->name('detaljiProdaja');
 
 
 

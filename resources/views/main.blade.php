@@ -344,9 +344,9 @@
         </div>
         <div id="linkovi" class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
             <div class="dugmici row-cols-1"><a href="{{route('indexArtikal')}}" class="btn  btn-info btn-block my-lg-4 my-md-2 my-sm-1 px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst  text-black-50">Artikli</span></a></div>
-            <div class="dugmici row-cols-1"><a href="{{route('indexKategorija')}}" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1  px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst text-black-50">Prodaja konobara</span></a></div>
+            <div class="dugmici row-cols-1"><a href="{{route('indexProdajaKonobara')}}" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1  px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst text-black-50">Prodaja konobara</span></a></div>
             @can('admin')
-                <div class="dugmici row-cols-1"><a href="{{route('indexKategorija')}}" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1 px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst text-black-50">Prodaja svih konobara</span></a></div>
+                <div class="dugmici row-cols-1"><a href="{{route('indexProdajaSvihKonobara')}}" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1 px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst text-black-50">Prodaja svih konobara</span></a></div>
                 <div class="dugmici row-cols-1"><a href="{{route('indexKategorija')}}" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1 px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst text-black-50">Administracija</span></a></div>
             @endcan
             <div class="dugmici row-cols-1"><a href="{{route('indexKategorija')}}" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1 px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst text-black-50">Predracuni</span></a></div>

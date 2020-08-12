@@ -73,34 +73,67 @@ class OtvorenRacun extends Model
         return $zaKuhinju;
     }
 
-    public function zatvori($nacinPlacanja)
+    public function zatvori($nacinPlacanja,$placeno)
     {
-        ZatvorenRacun::create([
-            'Sto'=>$this->Sto,
-            'Gost'=>$this->Gost,
-            'Radnik'=>$this->Radnik,
+//        ZatvorenRacun::create([
+//            'Sto'=>$this->Sto,
+//            'Gost'=>$this->Gost,
+//            'Radnik'=>$this->Radnik,
+//            'Napomena'=>$this->Napomena,
+//            'UkupnaCena'=>$this->UkupnaCena,
+//            'NacinPlacanja'=>$nacinPlacanja
+//        ]);
+//        $noviRacun=ZatvorenRacun::where('Sto',$this->Sto)->latest()->first();
+//        foreach ($this->stavke as $stavka)
+//        {
+//            ZatvorenRacunStavka::create([
+//                'brRacuna'=>$noviRacun->brojRacuna,
+//                'Artikal'=>$stavka->Artikal,
+//                'Kolicina'=>$stavka->Kolicina,
+//                'Popust'=>$stavka->Popust
+//            ]);
+//            $stavka->artikal->magacin->prodaj($stavka->Kolicina);
+//        }
+//        OtvorenRacun::destroy($this->brojRacuna);
+        $this->naplati($nacinPlacanja,$placeno,true);
+    }
+
+    public function naplati($nacinPlacanja,$placeno,$zatvoren=false,$brFiskal=null)
+    {
+        $vrsta=VrstaDokumenta::where('Sifra','RCM')->first();
+        $orgjed=OrganizacionaJedinica::where('Vrsta','R')->first();
+        Dokument::create([
+            'Dokument'=>$vrsta->id,
+            'BrDok'=>Dokument::sledeciBrDok($vrsta),
+            'BrVezanogDok'=>Dokument::sledeciBrVezanogDok(),
+            'SifKom'=>$this->Gost,
+            'SifOj1'=>auth()->user()->Objekat,
+            'SifOj2'=>$orgjed->SifOj,
             'Napomena'=>$this->Napomena,
-            'UkupnaCena'=>$this->UkupnaCena,
-            'NacinPlacanja'=>$nacinPlacanja
+            'VrstaDok'=>$zatvoren ? 'z' :'p',
+            $nacinPlacanja=>$this->UkupnaCena,
+            'BrFiskal'=>$brFiskal,
+            'Radnik'=>$this->Radnik,
+            'DatumF'=>date("Y-m-d"),
+            'VremeF'=>date("H:i"),
+            'Ukupno1'=>$this->UkupnaCena,
+            'BrojStola'=>$this->Sto,
+            'Placeno'=>$placeno,
+            'Dan'=>(new \DateTime(Firma::first()->created_at))->diff(new \DateTime(date("Y-m-d H:i:s")))->days
         ]);
-        $noviRacun=ZatvorenRacun::where('Sto',$this->Sto)->latest()->first();
-        foreach ($this->stavke as $stavka)
-        {
-            ZatvorenRacunStavka::create([
-                'brRacuna'=>$noviRacun->brojRacuna,
-                'Artikal'=>$stavka->Artikal,
+        $noviRacun=Dokument::all()->last();
+        foreach ($this->stavke as $stavka) {
+            DokumentStavka::create([
+                'IDDOK'=>$noviRacun->id,
+                'SifraRobe'=>$stavka->Artikal,
                 'Kolicina'=>$stavka->Kolicina,
-                'Popust'=>$stavka->Popust
+                'Rabat'=>0,
+                'NabCena'=>$stavka->artikal->magacin->ZadnjaNabavnaCena,
+                'ProdCena'=>$stavka->cenaSaPopustom(),
+                'Odstampano'=>!$zatvoren
             ]);
             $stavka->artikal->magacin->prodaj($stavka->Kolicina);
         }
-        OtvorenRacun::destroy($this->brojRacuna);
-    }
-
-    public function naplati()
-    {
-        foreach ($this->stavke as $stavka)
-            $stavka->artikal->magacin->prodaj($stavka->Kolicina);
         OtvorenRacun::destroy($this->brojRacuna);
     }
 }

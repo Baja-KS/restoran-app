@@ -12,6 +12,6 @@ class VrstaDokumenta extends Model
 
     public function dokumenti()
     {
-        return $this->hasMany('tblDokumenta','Dokument','id');
+        return $this->hasMany(Dokument::class,'Dokument','id');
     }
 }

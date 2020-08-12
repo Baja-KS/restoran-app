@@ -45,7 +45,6 @@ class User extends Authenticatable
     {
         return $this->Admin == "Y";
     }
-
     public function otvoreniRacuni()
     {
         return $this->hasMany(OtvorenRacun::class,'Radnik','PK');
@@ -54,4 +53,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(ZatvorenRacun::class,'Radnik','PK');
     }
+
+    public function dokumenti()
+    {
+        return $this->hasMany(Dokument::class,'Radnik','PK');
+    }
+
 }
