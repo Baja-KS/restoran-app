@@ -1,6 +1,7 @@
 @extends('layouts.welcome')
 
 @section('content')
+    @include('layouts.bezstolova')
     <div class="container-fluid">
         <div class="col-md-4">
             <h4 class="text">Naziv:{{$artikal->Naziv}}</h4>

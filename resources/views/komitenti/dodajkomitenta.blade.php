@@ -1,6 +1,6 @@
-@extends('layouts.welcome')
+@extends('administracija.base')
 
-@section('content')
+@section('tab-content')
     <div class="flex">
         <form action="{{route('storeKomitent')}}" method="POST">
             @csrf

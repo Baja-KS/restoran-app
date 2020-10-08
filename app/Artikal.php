@@ -106,4 +106,24 @@ class Artikal extends Model
         return $this->hasMany(DokumentStavka::class,'SifraRobe','PLUKod');
     }
 
+    public function grupa()
+    {
+        return $this->podkategorija->glavnaKategorija;
+    }
+    public static function zaPrijemnicu()
+    {
+        $dozvoljeneGrupe=['Pica','Komponente'];
+        $kategorije=collect([]);
+        $artikli=collect([]);
+        foreach ($dozvoljeneGrupe as $dg)
+        {
+            $grupa=Kategorija::where('Naziv',$dg)->first();
+            $kategorije=$kategorije->merge($grupa->podkategorije);
+        }
+        foreach ($kategorije as $kategorija)
+        {
+            $artikli=$artikli->merge($kategorija->artikli);
+        }
+        return $artikli;
+    }
 }

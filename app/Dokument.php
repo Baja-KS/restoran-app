@@ -57,5 +57,26 @@ class Dokument extends Model
             $profit+=$stavka->profit();
         return $profit;
     }
+    public static function prijemniceZaPaginate()
+    {
+        return VrstaDokumenta::where('Sifra','KLM')->first()->dokumenti();
+    }
 
+    public static function prijemnice()
+    {
+        return VrstaDokumenta::where('Sifra','KLM')->first()->dokumenti;
+    }
+
+    public function knjizenje()
+    {
+        if (!$this->IndikatorKnjizenja and $this->vrstaDokumenta->Sifra==='KLM')
+        {
+//            dd($this->stavke);
+            foreach ($this->stavke as $stavka)
+                $stavka->knjizenje();
+            $this->update([
+                'IndikatorKnjizenja'=>true
+            ]);
+        }
+    }
 }

@@ -1,10 +1,10 @@
-@extends('layouts.welcome')
+@extends('administracija.base')
 
-@section('content')
+@section('tab-content')
     <div class="col-md-6 justify-content-lg-start px-lg-5">
-        <h2>Komitenti</h2>
+        <h2 class="text-light">Komitenti</h2>
         <hr>
-        <table class="table table-borderless">
+        <table class="table table-borderless text-light">
             @if($komitenti->count()>0)
             <thead>
                 <tr>

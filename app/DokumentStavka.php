@@ -45,4 +45,18 @@ class DokumentStavka extends Model
             return $this->Kolicina*($this->ProdCena-$nabavnaCena);
         }
     }
+
+    public function knjizenje()
+    {
+
+        if ($this->dokument->vrstaDokumenta->Sifra==='KLM')
+        {
+            $magacin=StavkaMagacina::where('SifraArtikla',$this->SifraRobe)->first();
+            $ulaz=$magacin->KolicinaUlaza;
+            $magacin->update([
+                'KolicinaUlaza'=>$ulaz+$this->Kolicina,
+                'ZadnjaNabavnaCena'=>$this->NabCena
+            ]);
+        }
+    }
 }

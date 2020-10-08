@@ -43,14 +43,6 @@ Route::middleware('auth')->group(function (){
     Route::patch('/jedinice/{jedinica}','JedinicamereController@update')->name('updateJedinicamere');
     Route::delete('/jedinice/{jedinica}','JedinicamereController@destroy')->name('destroyJedinicamere');
 
-    //komitenti
-    Route::get('/komitenti','KomitentController@index')->name('indexKomitent');
-    Route::get('/komtineti/dodaj','KomitentController@create')->name('createKomitent');
-    Route::post('/komitenti/dodaj','KomitentController@store')->name('storeKomitent');
-    Route::get('/komitenti/{komitent}/show','KomitentController@show')->name('showKomitent');
-    Route::get('/komitenti/{komitent}/edit','KomitentController@edit')->name('editKomitent');
-    Route::patch('/komitenti/{komitent}','KomitentController@update')->name('updateKomitent');
-    Route::delete('/komitenti/{komitent}','KomitentController@destroy')->name('destroyKomitent');
 
     //poreske stope
     Route::get('/poreskestope','PoreskastopaController@index')->name('indexPoreskastopa');
@@ -139,7 +131,27 @@ Route::middleware('auth')->group(function (){
     });
     Route::get('/prodaja/detalji/{dokument}','ProdajaController@show')->name('detaljiProdaja');
 
+    //administracija
+    Route::get('/administracija','AdministracijaController@index')->name('indexAdministracija');
+    //komitenti
+    Route::get('/administracija/komitenti','KomitentController@index')->name('indexKomitent');
+    Route::get('/administracija/komtineti/dodaj','KomitentController@create')->name('createKomitent');
+    Route::post('/administracija/komitenti/dodaj','KomitentController@store')->name('storeKomitent');
+    Route::get('/administracija/komitenti/{komitent}/show','KomitentController@show')->name('showKomitent');
+    Route::get('/administracija/komitenti/{komitent}/edit','KomitentController@edit')->name('editKomitent');
+    Route::patch('/administracija/komitenti/{komitent}','KomitentController@update')->name('updateKomitent');
+    Route::delete('/administracija/komitenti/{komitent}','KomitentController@destroy')->name('destroyKomitent');
 
-
+    Route::get('/administracija/prijemnice','PrijemnicaController@index')->name('indexPrijemnica');
+//    Route::get('/administracija/prijemnice/table','PrijemnicaController@tableIndex')->name('tablePrijemnica');
+    Route::get('/administracija/prijemnice/dodaj','PrijemnicaController@create')->name('createPrijemnica');
+    Route::get('/administracija/prijemnice/dodaj/sifPromena','PrijemnicaController@sifraPromena')->name('sifraPromena');
+    Route::get('/administracija/prijemnice/dodaj/dobavljacPdv','PrijemnicaController@dobavljacPdv')->name('dobavljacPdv');
+    Route::post('/administracija/prijemnice/dodaj','PrijemnicaController@store')->name('storePrijemnica');
+    Route::delete('/administracija/prijemnice/brisi/{dokument}','PrijemnicaController@destroy')->name('destroyPrijemnica');
+    Route::patch('/administracija/prijemnice/knjizi/{dokument}','PrijemnicaController@proknjizi')->name('proknjiziPrijemnica');
+    Route::get('/administracija/prijemnice/izmeni/{dokument}','PrijemnicaController@edit')->name('editPrijemnica');
+    Route::patch('/administracija/prijemnice/izmeni/{dokument}/update','PrijemnicaController@update')->name('updatePrijemnica');
+    Route::get('/administracija/prijemnice/stampaj/{dokument}','PrijemnicaController@stampa')->name('stampaPrijemnica');
 
 });

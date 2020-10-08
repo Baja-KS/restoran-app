@@ -1,6 +1,6 @@
-@extends('layouts.welcome')
+@extends('administracija.base')
 
-@section('content')
+@section('tab-content')
 <div class="container-fluid">
     <div class="col-md-2">
         <p>Naziv Komitenta:{{$komitent->Naziv}}</p>
