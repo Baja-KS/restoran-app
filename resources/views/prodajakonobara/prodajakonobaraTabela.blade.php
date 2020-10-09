@@ -1,7 +1,19 @@
 @extends('prodajakonobara.prodajakonobara')
 
 @section('tabela')
-    <h2 class="text-light">Konobar:{{auth()->user()->CompleteName}}</h2>
+    <style>
+        #header {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
+    <div id="header">
+        <h2 class="text-light mx-2">Konobar:{{auth()->user()->CompleteName}}  </h2>
+        @if($datum)
+            <h2 class="text-light mx-2">Od: {{$od}} </h2>
+            <h2 class="text-light mx-2">Do: {{$do}} </h2>
+        @endif
+    </div>
     <table class="table table-light table-borderless table-responsive">
         <thead>
             <tr>
@@ -43,5 +55,7 @@
             @endforeach
         </tbody>
     </table>
-    <div>{{$racuni->links()}}</div>
+{{--    @if(!$datum)--}}
+    <div>{{$racuni->appends(request()->input())->links()}}</div>
+{{--    @endif--}}
 @endsection

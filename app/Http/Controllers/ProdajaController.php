@@ -25,7 +25,8 @@ class ProdajaController extends Controller
         $racuni=$vrstaDok->dokumenti()->where('Radnik',auth()->user()->PK)->whereDate('created_at','=',Carbon::today()->toDateString())->latest()->paginate(5);
         return view('prodajakonobara.prodajakonobaraTabela',[
             'svi'=>false,
-            'racuni'=>$racuni
+            'racuni'=>$racuni,
+            'datum'=>false
         ]);
     }
 
@@ -35,7 +36,8 @@ class ProdajaController extends Controller
         $racuni=$vrstaDok->dokumenti()->latest()->whereDate('created_at','=',Carbon::today()->toDateString())->paginate(5);
         return view('prodajakonobara.prodajakonobaraTabela',[
             'svi'=>true,
-            'racuni'=>$racuni
+            'racuni'=>$racuni,
+            'datum'=>false
         ]);
     }
 
@@ -45,7 +47,8 @@ class ProdajaController extends Controller
         $racuni=$vrstaDok->dokumenti()->where('Radnik',auth()->user()->PK)->whereBetween('created_at',[Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->latest()->paginate(5);
         return view('prodajakonobara.prodajakonobaraTabela',[
             'svi'=>false,
-            'racuni'=>$racuni
+            'racuni'=>$racuni,
+            'datum'=>false
         ]);
     }
 
@@ -55,7 +58,8 @@ class ProdajaController extends Controller
         $racuni=$vrstaDok->dokumenti()->latest()->whereBetween('created_at',[Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->paginate(5);
         return view('prodajakonobara.prodajakonobaraTabela',[
             'svi'=>true,
-            'racuni'=>$racuni
+            'racuni'=>$racuni,
+            'datum'=>false
         ]);
     }
 
@@ -65,7 +69,8 @@ class ProdajaController extends Controller
         $racuni=$vrstaDok->dokumenti()->where('Radnik',auth()->user()->PK)->whereBetween('created_at',[Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->latest()->paginate(5);
         return view('prodajakonobara.prodajakonobaraTabela',[
             'svi'=>false,
-            'racuni'=>$racuni
+            'racuni'=>$racuni,
+            'datum'=>false
         ]);
     }
     public function mesecnaSvi()
@@ -74,7 +79,34 @@ class ProdajaController extends Controller
         $racuni=$vrstaDok->dokumenti()->latest()->whereBetween('created_at',[Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->paginate(5);
         return view('prodajakonobara.prodajakonobaraTabela',[
             'svi'=>true,
-            'racuni'=>$racuni
+            'racuni'=>$racuni,
+            'datum'=>false
+        ]);
+    }
+
+    public function odDo()
+    {
+        $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
+        $racuni=$vrstaDok->dokumenti()->latest()->whereBetween('created_at',[\request('od'),\request('do')])->paginate(5);
+        return view('prodajakonobara.prodajakonobaraTabela',[
+            'svi'=>false,
+            'racuni'=>$racuni,
+            'datum'=>true,
+            'od'=>date('d/m/Y',strtotime(\request('od'))),
+            'do'=>date('d/m/Y',strtotime(\request('do')))
+        ]);
+    }
+
+    public function odDoSvi()
+    {
+        $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
+        $racuni=$vrstaDok->dokumenti()->latest()->whereBetween('created_at',[\request('od'),\request('do')])->paginate(5);
+        return view('prodajakonobara.prodajakonobaraTabela',[
+            'svi'=>true,
+            'racuni'=>$racuni,
+            'datum'=>true,
+            'od'=>date('d/m/Y',strtotime(\request('od'))),
+            'do'=>date('d/m/Y',strtotime(\request('do')))
         ]);
     }
 

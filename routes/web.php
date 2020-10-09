@@ -122,12 +122,14 @@ Route::middleware('auth')->group(function (){
     Route::get('/prodaja/dnevna','ProdajaController@dnevna')->name('dnevnaProdajaKonobara');
     Route::get('/prodaja/nedeljna','ProdajaController@nedeljna')->name('nedeljnaProdajaKonobara');
     Route::get('/prodaja/mesecna','ProdajaController@mesecna')->name('mesecnaProdajaKonobara');
+    Route::get('/prodaja/odDo','ProdajaController@odDo')->name('odDoProdajaKonobara');
 
     Route::middleware('can:admin')->group(function (){
         Route::get('/prodaja/svi','ProdajaController@indexSvi')->name('indexProdajaSvihKonobara');
         Route::get('/prodaja/dnevna/svi','ProdajaController@dnevnaSvi')->name('dnevnaProdajaSvihKonobara');
         Route::get('/prodaja/nedeljna/svi','ProdajaController@nedeljnaSvi')->name('nedeljnaProdajaSvihKonobara');
         Route::get('/prodaja/mesecna/svi','ProdajaController@mesecnaSvi')->name('mesecnaProdajaSvihKonobara');
+        Route::get('/prodaja/odDo/svi','ProdajaController@odDoSvi')->name('odDoProdajaSvihKonobara');
     });
     Route::get('/prodaja/detalji/{dokument}','ProdajaController@show')->name('detaljiProdaja');
 
