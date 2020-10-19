@@ -5,116 +5,82 @@ namespace App\Http\Controllers;
 use App\Dokument;
 use App\VrstaDokumenta;
 use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\Access\Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\UnauthorizedException;
 
 class ProdajaController extends Controller
 {
-    public function index()
+    public function index($svi)
     {
-        return view('prodajakonobara.prodajakonobara',['svi'=>false]);
+        if($svi)
+            if(\Illuminate\Support\Facades\Gate::denies('admin'))
+                throw new UnauthorizedException("Admins only");
+        return view('prodajakonobara.prodajakonobara',['svi'=>$svi]);
     }
 
-    public function indexSvi()
-    {
-        return view('prodajakonobara.prodajakonobara',['svi'=>true]);
-    }
 
-    public function dnevna()
+    public function pregledProdaje($svi,$tipPregleda)
     {
+        $dan=false;
+        $customDatum=false;
+        $od=null;
+        $do=null;
         $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
-        $racuni=$vrstaDok->dokumenti()->where('Radnik',auth()->user()->PK)->whereDate('created_at','=',Carbon::today()->toDateString())->latest()->paginate(5);
+        $racuni=$vrstaDok->dokumenti();
+        if($svi)
+        {
+            if(\Illuminate\Support\Facades\Gate::denies('admin'))
+                throw new UnauthorizedException("Admins only");
+            $racuni=$racuni->latest();
+        }
+        else
+            $racuni=$racuni->where('Radnik',auth()->user()->PK);
+        switch ($tipPregleda)
+        {
+            case "dan":
+                $dan=true;
+                $od=Carbon::today()->toDateString();
+                break;
+            case "nedelja":
+                $od=Carbon::now()->startOfWeek();
+                $do=Carbon::now()->endOfWeek();
+                break;
+            case "mesec":
+                $od=Carbon::now()->startOfMonth();
+                $do=Carbon::now()->endOfMonth();
+                break;
+            default:
+                $customDatum=true;
+                $od=\request('od');
+                $do=\request('do');
+        }
+        if($dan)
+            $racuni=$racuni->whereDate('created_at','=',$od);
+        else
+            $racuni=$racuni->whereBetween('created_at',[$od,$do]);
+        if(!$svi)
+            $racuni=$racuni->latest();
+        $racuni=$racuni->paginate(5);
+
         return view('prodajakonobara.prodajakonobaraTabela',[
-            'svi'=>false,
+            'svi'=>$svi,
             'racuni'=>$racuni,
-            'datum'=>false
+            'datum'=>$customDatum,
+            'od'=>$customDatum ? date('d/m/Y',strtotime(\request('od'))) : null,
+            'do'=>$customDatum ? date('d/m/Y',strtotime(\request('do'))) : null
         ]);
+
     }
 
-    public function dnevnaSvi()
-    {
-        $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
-        $racuni=$vrstaDok->dokumenti()->latest()->whereDate('created_at','=',Carbon::today()->toDateString())->paginate(5);
-        return view('prodajakonobara.prodajakonobaraTabela',[
-            'svi'=>true,
-            'racuni'=>$racuni,
-            'datum'=>false
-        ]);
-    }
 
-    public function nedeljna()
-    {
-        $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
-        $racuni=$vrstaDok->dokumenti()->where('Radnik',auth()->user()->PK)->whereBetween('created_at',[Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->latest()->paginate(5);
-        return view('prodajakonobara.prodajakonobaraTabela',[
-            'svi'=>false,
-            'racuni'=>$racuni,
-            'datum'=>false
-        ]);
-    }
-
-    public function nedeljnaSvi()
-    {
-        $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
-        $racuni=$vrstaDok->dokumenti()->latest()->whereBetween('created_at',[Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->paginate(5);
-        return view('prodajakonobara.prodajakonobaraTabela',[
-            'svi'=>true,
-            'racuni'=>$racuni,
-            'datum'=>false
-        ]);
-    }
-
-    public function mesecna()
-    {
-        $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
-        $racuni=$vrstaDok->dokumenti()->where('Radnik',auth()->user()->PK)->whereBetween('created_at',[Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->latest()->paginate(5);
-        return view('prodajakonobara.prodajakonobaraTabela',[
-            'svi'=>false,
-            'racuni'=>$racuni,
-            'datum'=>false
-        ]);
-    }
-    public function mesecnaSvi()
-    {
-        $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
-        $racuni=$vrstaDok->dokumenti()->latest()->whereBetween('created_at',[Carbon::now()->startOfMonth(),Carbon::now()->endOfMonth()])->paginate(5);
-        return view('prodajakonobara.prodajakonobaraTabela',[
-            'svi'=>true,
-            'racuni'=>$racuni,
-            'datum'=>false
-        ]);
-    }
-
-    public function odDo()
-    {
-        $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
-        $racuni=$vrstaDok->dokumenti()->latest()->whereBetween('created_at',[\request('od'),\request('do')])->paginate(5);
-        return view('prodajakonobara.prodajakonobaraTabela',[
-            'svi'=>false,
-            'racuni'=>$racuni,
-            'datum'=>true,
-            'od'=>date('d/m/Y',strtotime(\request('od'))),
-            'do'=>date('d/m/Y',strtotime(\request('do')))
-        ]);
-    }
-
-    public function odDoSvi()
-    {
-        $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
-        $racuni=$vrstaDok->dokumenti()->latest()->whereBetween('created_at',[\request('od'),\request('do')])->paginate(5);
-        return view('prodajakonobara.prodajakonobaraTabela',[
-            'svi'=>true,
-            'racuni'=>$racuni,
-            'datum'=>true,
-            'od'=>date('d/m/Y',strtotime(\request('od'))),
-            'do'=>date('d/m/Y',strtotime(\request('do')))
-        ]);
-    }
-
-    public function show(Dokument $dokument)
+    public function show(Dokument $dokument,$svi)
     {
         return view('prodajakonobara.detaljiracuna',[
             'racun'=>$dokument,
-            'svi'=>false,
+            'svi'=>$svi,
             'stavke'=>$dokument->stavke()->paginate(5)
         ]);
     }

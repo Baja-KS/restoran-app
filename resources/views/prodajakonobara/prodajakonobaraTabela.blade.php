@@ -50,7 +50,7 @@
                     <td>{{$racun->VrstaDok}}</td>
                     <td>{{$racun->BrojStola}}</td>
                     <td>{{$racun->profit()}}</td>
-                        <td><a class="btn btn-success" href="{{route('detaljiProdaja',$racun->id)}}">Detalji racuna</a></td>
+                        <td><a class="btn btn-success" href="{{route('detaljiProdaja',[$racun->id,$svi])}}">Detalji racuna</a></td>
                 </tr>
             @endforeach
         </tbody>
