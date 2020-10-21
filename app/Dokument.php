@@ -100,4 +100,16 @@ class Dokument extends Model
             ]);
         }
     }
+    public function rasknjizavanje()
+    {
+        if ($this->IndikatorKnjizenja && ($this->vrstaDokumenta->Sifra==='KLM' || $this->vrstaDokumenta->Sifra==='NIV'))
+        {
+//            dd($this->stavke);
+            foreach ($this->stavke as $stavka)
+                $stavka->rasknjizavanje();
+            $this->update([
+                'IndikatorKnjizenja'=>false
+            ]);
+        }
+    }
 }

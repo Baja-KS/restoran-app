@@ -362,8 +362,11 @@ class PrijemnicaController extends Controller
 
         $fpdf->Output('F','prijemnica.pdf',true);
         $brojPrimeraka=1;
-        $stampac=Stampac::firma();
-        exec('lp -d ' . $stampac->Naziv . ' -n '.$brojPrimeraka.' prijemnica.pdf');
+        if(config('app.print'))
+        {
+            $stampac = Stampac::firma();
+            exec('lp -d ' . $stampac->Naziv . ' -n ' . $brojPrimeraka . ' prijemnica.pdf');
+        }
         return Redirect::route('indexPrijemnica');
     }
 }

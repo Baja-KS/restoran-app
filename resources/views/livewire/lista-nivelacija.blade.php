@@ -31,7 +31,7 @@
                     </td>
                 @endif
                 <td>
-                    <a href="" class="btn btn-info">Stampanje</a>
+                    <button type="button" wire:click="print({{$nivelacija->id}})" class="btn btn-info">Stampanje</button>
                 </td>
                 @if(!$nivelacija->IndikatorKnjizenja)
                     <td>

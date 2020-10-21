@@ -78,4 +78,18 @@ class DokumentStavka extends Model
             ]);
         }
     }
+    public function rasknjizavanje()
+    {
+        $magacin=StavkaMagacina::where('SifraArtikla',$this->SifraRobe)->first();
+        if ($this->dokument->vrstaDokumenta->Sifra==='KLM')
+        {
+            //TODO
+        }
+        else if($this->dokument->vrstaDokumenta->Sifra==='NIV')
+        {
+            $magacin->update([
+                'ZadnjaProdajnaCena'=>$this->StaraProdajnaCena
+            ]);
+        }
+    }
 }
