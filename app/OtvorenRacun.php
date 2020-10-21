@@ -43,7 +43,7 @@ class OtvorenRacun extends Model
         $ukupno=0;
         foreach ($this->stavke as $stavka)
         {
-            $ukupno+=$stavka->cenaSaPopustom();
+            $ukupno+=$stavka->cenaSaPopustom()*$stavka->Kolicina;
         }
         return $ukupno;
     }
