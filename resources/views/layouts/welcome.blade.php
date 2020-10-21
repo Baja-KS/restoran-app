@@ -25,6 +25,7 @@
         <link rel="stylesheet" href="/resources/demos/style.css">
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <livewire:styles/>
         <style>
             html, body {
                 background-image: url("/public/images/Stolovi2.jpg");!important;
@@ -81,7 +82,7 @@
     </head>
     <body style="background-image: url({{asset('images/Stolovi2.jpg')}}); background-repeat: no-repeat ; background-size: 100% 98%">
         <div class="container full-height">
-
+            <livewire:scripts/>
             @yield('content')
         </div>
     </body>

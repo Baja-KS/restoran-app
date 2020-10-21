@@ -1,18 +1,20 @@
-@extends('layouts.welcome')
+@extends('merneJedinice.jedinicemere')
 
-@section('content')
+@section('jmform')
     <div class="card-body">
         <a href="{{route('indexJedinicamere')}}" class="btn btn-success">Nazad</a>
-        <form method="POST" action="{{ route('updateJedinicamere',$jedinica->JMID) }}">
+        <form method="POST" action="{{$edit ? route('updateJedinicamere',$jedinica->JMID) : route('storeJedinicamere')}}">
             @csrf
-            @method('PATCH')
+            @if($edit)
+                @method('PATCH')
+            @endif
             <div class="form-group row">
-                <label for="ujm" class="col-md-4 col-form-label text-md-right">{{ __('Novo ime merne jedinice') }}</label>
+                <label for="naziv" class="col-md-4 col-form-label text-md-right">Naziv</label>
 
                 <div class="col-md-6">
-                    <input id="ujm" type="text" class="form-control @error('ujm') is-invalid @enderror" name="ujm" value="{{ $jedinica->Naziv }}" required autocomplete="ujm" autofocus>
+                    <input id="naziv" type="text" class="form-control @error('naziv') is-invalid @enderror" name="naziv" value="{{ $jedinica->Naziv ?? ""}}" required autocomplete="naziv" autofocus>
 
-                    @error('ujm')
+                    @error('naziv')
                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>

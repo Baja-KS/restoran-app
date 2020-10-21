@@ -11,7 +11,7 @@ class PoreskastopaController extends Controller
     public function index()
     {
         $poreskestope=PoreskaStopa::all();
-        return view('poreskestope.poreskestope',['poreskestope'=>$poreskestope]);
+        return view('poreskestope.poreskestopeform',['edit'=>false,'poreskestope'=>$poreskestope,'poreskastopa'=>null]);
     }
 
     public function store()
@@ -29,7 +29,8 @@ class PoreskastopaController extends Controller
 
     public function edit(PoreskaStopa $poreskastopa)
     {
-        return view('poreskestope.editporeskestope',['poreskastopa'=>$poreskastopa]);
+        $poreskestope=PoreskaStopa::all();
+        return view('poreskestope.poreskestopeform',['edit'=>true,'poreskestope'=>$poreskestope,'poreskastopa'=>$poreskastopa]);
     }
 
     public function update(PoreskaStopa $poreskastopa)

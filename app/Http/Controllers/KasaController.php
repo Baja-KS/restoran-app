@@ -26,7 +26,6 @@ class KasaController extends Controller
 {
     private function zaSank(OtvorenRacun $otvorenRacun)
     {
-        $stampac=Stampac::sank();
         $stavke=$otvorenRacun->zaSank();
         if ($stavke->count())
         {
@@ -57,18 +56,20 @@ class KasaController extends Controller
             }
 //        $fpdf->IncludeJS("print();");
             $fpdf->Output('F','sank.pdf',true);
-            exec('lp -d '.$stampac->Naziv.' sank.pdf');
+            if(config('app.print')) {
+                $stampac=Stampac::sank();
+                exec('lp -d ' . $stampac->Naziv . ' sank.pdf');
+            }
 //        return Redirect::route('home');
 //        exit();
         }
     }
     private function zaKuhinju(OtvorenRacun $otvorenRacun)
     {
-        $stampac=Stampac::kuhinja();
         $stavke=$otvorenRacun->zaKuhinju();
         if ($stavke->count())
         {
-            $fpdf=new Fpdf_autoprint('P','mm',array(58,100));
+            $fpdf=new Fpdf('P','mm',array(58,100));
             $fpdf->AddPage();
 
             $fpdf->SetFont('Arial','B',10);
@@ -94,7 +95,11 @@ class KasaController extends Controller
             }
 //        $fpdf->IncludeJS("print();");
             $fpdf->Output('F','kuhinja.pdf',true);
-            exec('lp -d '.$stampac->Naziv.' kuhinja.pdf');
+            if(config('app.print'))
+            {
+                $stampac=Stampac::kuhinja();
+                exec('lp -d ' . $stampac->Naziv . ' kuhinja.pdf');
+            }
 //            $opSys=php_uname('s');
 //            if ($opSys=='Linux')
 //                exec('lp -d kuhinja kuhinja.pdf');
@@ -106,7 +111,6 @@ class KasaController extends Controller
     }
     private function izdajRacun($racuni,$nacinPlacanja,$placeno=null,$preview=false)
     {
-        $stampac=Stampac::racun();
         $firma=Firma::all()->first();
         $fpdf=new Fpdf('P','mm',array(58,200));
         $fpdf->AddPage();
@@ -164,13 +168,16 @@ class KasaController extends Controller
 
             $fpdf->Output('F', 'racun.pdf', true);
 //            exec('lp -d '.$stampac->AkcijaStampaca.' racun.pdf');
-            exec('lp -d ' . $stampac->Naziv . ' racun.pdf');
+            if(config('app.print'))
+            {
+                $stampac=Stampac::racun();
+                exec('lp -d ' . $stampac->Naziv . ' racun.pdf');
+            }
         }
     }
 
-    private function izdajRacunFirma($racuni,$nacinPlacanja,$firma,$brIsecka,$preview=false,$brojPrimeraka=1)
+    public function izdajRacunFirma($racuni,$nacinPlacanja,$firma,$brIsecka,$preview=false,$brojPrimeraka=1)
     {
-        $stampac=Stampac::firma();
         $firma=Komitent::where('Sifra',$firma)->first();
         $izdaje=Firma::all()->first();
 
@@ -322,7 +329,11 @@ class KasaController extends Controller
         {
             $fpdf->Output('F', 'firma.pdf', true);
 //            exec('lp -d '.$stampac->AkcijaStampaca.' racun.pdf');
-            exec('lp -d ' . $stampac->Naziv . ' -n '.$brojPrimeraka.' firma.pdf');
+            if(config('app.print'))
+            {
+                $stampac=Stampac::firma();
+                exec('lp -d ' . $stampac->Naziv . ' -n ' . $brojPrimeraka . ' firma.pdf');
+            }
         }
 
 
@@ -427,21 +438,21 @@ class KasaController extends Controller
         $kategorije=Podkategorija::all();
         $radnik=auth()->user();
         $komitenti=Komitent::all();
-        return view('kasa.createkasa',[
+        return view('kasa.kasalist',[
             'kategorije'=>$kategorije,
             'radnik'=>$radnik,
             'sto'=>$sto,
             'komitenti'=>$komitenti,
             'greska'=>$greska,
             'ukupno'=>null,
-            'index'=>0
+            'index'=>0,
+            'racuni'=>null,
+            'edit'=>false
         ]);
     }
 
     public function store($sto)
     {
-//        Log::info(\request('popuststavke'));
-//        ddd(\request('popuststavke'));
         $size=count(\request('stavkaid') ?? []);
         $popuststavke=[];
         $ukupnaCena=0;
@@ -450,52 +461,10 @@ class KasaController extends Controller
         {
             return Redirect::route('home');
         }
-        else
-        {
-            /*for ($i=0;$i<$size;$i++)
-            {
-                $artikal=Artikal::where('PLUKod',\request('stavkaid')[$i])->first();
-                $kolicina=\request('stavkakolicina')[$i];
-
-
-                $rezervisanaKolicina=OtvorenRacunStavka::where('Artikal',$artikal->PLUKod)->sum('Kolicina') ?? 0;
-                if ($rezervisanaKolicina + $kolicina > $artikal->magacin->naStanju())
-                {
-                    if (OtvorenRacun::brojRacunaZaSto($sto)>0)
-                    {
-                        return Redirect::route('editKasa',[$sto,$artikal->Naziv." nema dovoljno na stanju.Na stanju: ".($artikal->magacin->naStanju()-$rezervisanaKolicina)]);
-                    }
-                    return Redirect::route('createKasa',[$sto,$artikal->Naziv." nema dovoljno na stanju.Na stanju: ".($artikal->magacin->naStanju()-$rezervisanaKolicina)]);
-                }
-
-
-            }*/
-            /*for ($i=0;$i<$size;$i++)
-            {
-                $artikal=Artikal::where('PLUKod',\request('stavkaid')[$i])->first();
-                $cena=$artikal->magacin->ZadnjaProdajnaCena;
-//                Log::info($cena);
-                $popuststavke[]=\request('popuststavke')[$i];
-                $cena-=(\request('popuststavke')[$i]/100*$cena);
-                Log::info(\request('popuststavke')[$i]);
-                $kolicina=\request('stavkakolicina')[$i];
-                $ukupnaCena+=$cena*$kolicina;
-            }*/
-        }
-
         $attributes=\request()->validate([
             'gost'=>['string','nullable'],
-//            'bezPopusta'=>['numeric','float'],
-//            'ukupnacena'=>['numeric','float'],
-//            'popust'=>['numeric'],
             'napomena'=>['string','nullable'],
         ]);
-//        $popust=\request('popust') ?? 0;
-//        if ($attributes['gost'] and !\request('popust'))
-//        {
-//            $popust=Komitent::where('Sifra',$attributes['gost'])->pluck('Popust')->first();
-//        }
-//        $ukupnaCena-=($popust/100*$ukupnaCena);
         OtvorenRacun::create([
             'Sto'=>$sto,
             'Gost'=>$attributes['gost'],
@@ -557,7 +526,7 @@ class KasaController extends Controller
 //        {
 //            $bezPopusta+=(100*$racun->UkupnaCena)/(100-$racun->Popust);
 //        }
-        return view('kasa.editkasa',[
+        return view('kasa.kasalist',[
             'kategorije'=>$kategorije,
             'radnik'=>$radnik,
             'sto'=>$sto,
@@ -566,7 +535,8 @@ class KasaController extends Controller
             'greska'=>$greska,
             'ukupno'=>$racuni->sum('UkupnaCena'),
 //            'bezPopusta'=>$bezPopusta,
-            'index'=>0
+            'index'=>0,
+            'edit'=>true
         ]);
     }
 

@@ -34,12 +34,17 @@ class PrijemnicaController extends Controller
 //    }
     public function create()
     {
-        return view('administracija.createprijemnica',[
+        return view('administracija.prijemnicaform',[
             'prijemnice'=>Dokument::prijemnice(),
             'artikli'=>Artikal::zaPrijemnicu(),
             'komitenti'=>Komitent::all(),
             'brPrijemnice'=>Dokument::sledeciBrDok(VrstaDokumenta::where('Sifra','KLM')->first()),
-            'datumPrijemnice'=>Carbon::now()->format("d/m/Y")
+            'datumPrijemnice'=>Carbon::now()->format("d/m/Y"),
+            'bezPdv'=>0,
+            'iznosPdv'=>0,
+            'saPdv'=>0,
+            'edit'=>false,
+            'prijemnica'=>null
             ]);
     }
 
@@ -49,11 +54,6 @@ class PrijemnicaController extends Controller
         $jm=$artikal->jedinicamere->Naziv;
         $pdv=$artikal->poreskastopa->Vrednost;
         return response()->json(['jm'=>$jm,'pdv'=>$pdv],200);
-    }
-
-    public function dobavljacPdv(Request $request)
-    {
-
     }
 
     public function store()
@@ -133,14 +133,17 @@ class PrijemnicaController extends Controller
             $saPdv+=$nvpdv;
         }
 
-        return view('administracija.editprijemnica',[
+        return view('administracija.prijemnicaform',[
             'prijemnica'=>$dokument,
+            'edit'=>true,
             'prijemnice'=>Dokument::prijemnice(),
             'artikli'=>Artikal::zaPrijemnicu(),
             'komitenti'=>Komitent::all(),
             'bezPdv'=>$bezPdv,
             'iznosPdv'=>$iznosPdv,
-            'saPdv'=>$saPdv
+            'saPdv'=>$saPdv,
+            'brPrijemnice'=>$dokument->BrDok,
+            'datumPrijemnice'=>date_format($dokument->created_at,"d/m/Y"),
         ]);
     }
 

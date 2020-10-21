@@ -21,7 +21,7 @@ class KomitentController extends Controller
     }
     public function create()
     {
-        return view('komitenti.dodajkomitenta');
+        return view('komitenti.komitentform',['edit'=>false,'komitent'=>null]);
     }
     public function store()
     {
@@ -80,7 +80,7 @@ class KomitentController extends Controller
     }
     public function edit(Komitent $komitent)
     {
-        return view('komitenti.editkomitenta',['komitent'=>$komitent]);
+        return view('komitenti.komitentform',['edit'=>true,'komitent'=>$komitent]);
     }
     public function update(Komitent $komitent)
     {

@@ -10,7 +10,7 @@ class OrganizacionajedinicaController extends Controller
 {
     public function index()
     {
-        return view('orgjedinice.createorgjedinice',['organizacionejedinice'=>OrganizacionaJedinica::all()]);
+        return view('orgjedinice.orgjediniceform',['edit'=>false,'organizacionajedinica'=>null,'organizacionejedinice'=>OrganizacionaJedinica::all()]);
     }
 
     public function show(OrganizacionaJedinica $organizacionajedinica)
@@ -42,7 +42,7 @@ class OrganizacionajedinicaController extends Controller
 
     public function edit(OrganizacionaJedinica $organizacionajedinica)
     {
-        return view('orgjedinice.editorgjedinice',['organizacionajedinica'=>$organizacionajedinica,'organizacionejedinice'=>OrganizacionaJedinica::all()]);
+        return view('orgjedinice.orgjediniceform',['edit'=>true,'organizacionajedinica'=>$organizacionajedinica,'organizacionejedinice'=>OrganizacionaJedinica::all()]);
     }
 
     public function update(OrganizacionaJedinica $organizacionajedinica)

@@ -1,5 +1,8 @@
 <?php
 
+use App\Dokument;
+use App\VrstaDokumenta;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -152,5 +155,35 @@ Route::middleware('auth')->group(function (){
     Route::get('/administracija/prijemnice/izmeni/{dokument}','PrijemnicaController@edit')->name('editPrijemnica');
     Route::patch('/administracija/prijemnice/izmeni/{dokument}/update','PrijemnicaController@update')->name('updatePrijemnica');
     Route::get('/administracija/prijemnice/stampaj/{dokument}','PrijemnicaController@stampa')->name('stampaPrijemnica');
+
+    Route::get('/administracija/listaracuna',function (){
+        return view('administracija.racunilista',['gotovinski'=>false]);
+    })->name('listaRacuna');
+    Route::get('/administracija/listagotovinskihracuna',function (){
+        return view('administracija.racunilista',['gotovinski'=>true]);
+    })->name('listaGotovinskihRacuna');
+
+
+    Route::get('/administracija/nivelacije',function (){
+        return view('administracija.indexnivelacija');
+    })->name('listaNivelacije');
+
+    Route::get('/administracija/nivelacije/dodaj',function (){
+        return view('administracija.nivelacijaform',[
+            'edit'=>false,
+            'nivelacija'=>null,
+            'brNivelacije'=>Dokument::sledeciBrDok(VrstaDokumenta::where('Sifra','NIV')->first()),
+            'datumNivelacije'=>Carbon::now()->format("d/m/Y"),
+        ]);
+    })->name('dodajNivelaciju');
+
+    Route::get('/administracija/nivelacije/izmeni/{dokument}',function (Dokument $dokument){
+        return view('administracija.nivelacijaform',[
+            'edit'=>true,
+            'nivelacija'=>$dokument,
+            'brNivelacije'=>$dokument->BrDok,
+            'datumNivelacije'=>date_format($dokument->created_at,"d/m/Y"),
+        ]);
+    })->name('izmeniNivelaciju');
 
 });

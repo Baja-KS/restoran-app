@@ -32,22 +32,6 @@
             @endforelse
         </table>
     </div>
-    <div class="col-md-6">
-        <form action="{{route('storePoreskastopa')}}" method="POST">
-            @csrf
-        <div class="form-group">
-            <div>
-                <label for="opis" class="col-form-label">Opis poreske stope*</label>
-                <input id="opis" type="text" class="form-control @error('opis') is-invalid @enderror" name="opis" value="{{ old('opis') }}" required autocomplete="opis" autofocus>
-            </div>
-            <div>
-                <label for="vrednost" class="col-form-label">Vrednost*</label>
-                <input id="vrednost" type="text" class="form-control @error('vrednost') is-invalid @enderror" name="vrednost" value="{{ old('vrednost') }}" required autocomplete="vrednost" autofocus>
-            </div>
-        </div>
-            <button type="submit" class="btn btn-success">Dodaj poresku stopu</button>
-        </form>
-        <a href="{{route('home')}}" class="btn btn-info">Nazad</a>
-    </div>
+        @yield('psform')
     </div>
 @endsection

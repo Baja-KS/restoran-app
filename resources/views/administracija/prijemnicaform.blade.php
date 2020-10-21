@@ -22,103 +22,108 @@
             flex-direction: column;
         }
     </style>
-    <form method="POST" action="{{route('storePrijemnica')}}">
+    <form method="POST" action="{{$edit ? route('updatePrijemnica',$prijemnica->id) : route('storePrijemnica')}}">
         @csrf
-    <div class="flex-lg-row">
-        <span class="text-light font-weight-bold mx-4">Broj prijemnice: {{$brPrijemnice}}</span>
-        <span class="text-light font-weight-bold mx-4">Datum prijemnice: {{$datumPrijemnice}}</span>
-        <div id="uk" class="float-right">
-            <label for="nvbp" class="text-light">Nabavna vrednost bez PDV</label>
-            <input id="nvbp" disabled>
+        @if($edit)
+            @method('PATCH')
+        @endif
+        <div class="flex-lg-row">
+            <span class="text-light font-weight-bold mx-4">Broj prijemnice: {{$brPrijemnice}}</span>
+{{--            $prijemnica->BrDok--}}
+            <span class="text-light font-weight-bold mx-4">Datum prijemnice: {{$datumPrijemnice}}</span>
+{{--            date_format($prijemnica->created_at,"d/m/Y")--}}
+            <div id="uk" class="float-right">
+                <label for="nvbp" class="text-light">Nabavna vrednost bez PDV</label>
+                <input id="nvbp" disabled value="{{$bezPdv}}">
 
-            <label for="updv" class="text-light">Iznos PDV</label>
-            <input id="updv" disabled>
-            {{--        <hr>--}}
-            <label for="nvp" class="text-light">Nabavna vrednost sa PDV</label>
-            <input id="nvp" disabled>
+                <label for="updv" class="text-light">Iznos PDV</label>
+                <input id="updv" disabled value="{{$iznosPdv}}">
+                {{--        <hr>--}}
+                <label for="nvp" class="text-light">Nabavna vrednost sa PDV</label>
+                <input id="nvp" disabled value="{{$saPdv}}">
+            </div>
         </div>
-    </div>
-    <div id="bar" class="col-2 flex-row">
-        <br>
-        <label for="komitent" class="text-light font-weight-bold mx-4">Dobavljac</label>
-        <select id="komitent"  class="form-control  dropstatic" name="komitent" required>
-            <option  selected disabled value="">Izaberi Dobavljaca</option>
-            @foreach($komitenti as $komitent)
-                <option value="{{$komitent->Sifra}}">{{$komitent->Naziv}}</option>
-            @endforeach
-        </select>
-        <label for="brdok" class="font-weight-bold text-light">Broj dokumenta</label>
-        <input name="brdok" id="brdok" required>
-    </div>
-
-    <div>
-        <div class="form-group">
-            <table class="table table-borderless" id="tabelakomponenti">
-                <thead>
-                <tr class="font-weight-bold text-light">
-                    <th>Sifra</th>
-                    <th>Naziv</th>
-                    <th>JM</th>
-                    <th>Kolicina</th>
-                    <th>PDV %</th>
-                    <th>NC</th>
-                    <th>Rabat %</th>
-                    <th>NC sa Rabatom</th>
-                    <th>NC bez PDV</th>
-                    <th>NC sa PDV</th>
-                    <th><button type="button" class="btn btn-success btn-sm" id="btnadd">+</button></th>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                    <td><select  class="form-control sifra1 dropdown" required name="sifra[]"><option selected disabled class="defopcija" value="">Sifra artikla</option> @foreach($artikli as $artikal)<option value="{{$artikal->PLUKod}}">{{$artikal->PLUKod}}</option> @endforeach </select></td>';
-                        <td><select   class="form-control naziv1 dropdown" required ><option selected disabled class="defopcija" value="">Naziv artikla</option> @foreach($artikli as $artikal)<option value="{{$artikal->PLUKod}}">{{$artikal->Naziv}}</option> @endforeach </select></td>';
-                        <td><input  required type="text" disabled class="jm1 form-control"  ></td>
-                        <td><input required type="number" class="form-control kolicina1" min="0" step="0.01" name="kolicina[]"></td>
-                        <td><input   type="number" disabled class="form-control pdv1" min="0" step="0.01" ></td>
-                        <td><input  required type="number"  class="form-control nc1" min="0" step="0.01" name="nc[]"></td>
-                        <td><input required type="number"  class="form-control rabat1" min="0" step="0.01" name="rabat[]"></td>
-                        <td><input  type="number" disabled class="form-control ncsr1" min="0" step="0.01" ></td>
-                        <td><input  type="number" disabled class="form-control ncbp1" min="0" step="0.01" ></td>
-                        <td><input  type="number" disabled class="form-control ncp1" min="0" step="0.01" ></td>
-{{--                        <td><button type="button" class="btn btn-danger btnremove btn-sm">-</button></td>--}}
+        <div id="bar" class="col-2 flex-row">
+            <br>
+            <label for="komitent" class="text-light font-weight-bold mx-4">Dobavljac</label>
+            <select id="komitent" @if($edit && $prijemnica->IndikatorKnjizenja) disabled @endif  class="form-control  dropstatic" name="komitent" required>
+                <option  disabled value="">Izaberi Dobavljaca</option>
+                @foreach($komitenti as $komitent)
+                    <option value="{{$komitent->Sifra}}" @if($edit && $prijemnica->SifKom==$komitent->Sifra) selected @endif>{{$komitent->Naziv}}</option>
+                @endforeach
+            </select>
+            <label for="brdok" class="font-weight-bold text-light">Broj dokumenta</label>
+            <input name="brdok" id="brdok" @if($edit && $prijemnica->IndikatorKnjizenja) disabled @endif value="{{$edit ? $prijemnica->BrFiskal : ""}}" required>
+        </div>
+        <div>
+            <div class="form-group">
+                <table class="table table-borderless" id="tabelakomponenti">
+                    <thead>
+                    <tr class="font-weight-bold text-light">
+                        <th>Sifra</th>
+                        <th>Naziv</th>
+                        <th>JM</th>
+                        <th>Kolicina</th>
+                        <th>PDV %</th>
+                        <th>NC</th>
+                        <th>Rabat %</th>
+                        <th>NC sa Rabatom</th>
+                        <th>NC bez PDV</th>
+                        <th>NC sa PDV</th>
+                        @if(!$edit || !$prijemnica->IndikatorKnjizenja)<th><button type="button" class="btn btn-success btn-sm" id="btnadd">+</button></th>@endif
                     </tr>
-                </tbody>
-            </table>
-            <div id="napomenadiv" class="col-2">
-                <label for="napomena" class="">Napomena</label>
-                <textarea id="napomena" name="napomena"></textarea>
-            </div>
-            <div class="float-right">
-                <a href="{{route('indexPrijemnica')}}" class="btn btn-warning">Nazad</a>
-                <button type="submit" name="sub" class="btn btn-success ">Nova Prijemnica</button>
+                    </thead>
+                    <tbody>
+                    @if($edit)
+                        @foreach($prijemnica->stavke as $stavka)
+                        <tr>
+                            <td><select @if($prijemnica->IndikatorKnjizenja) disabled @endif class="form-control sifra1 dropdown" required name="sifra[]"><option  disabled class="defopcija" value="">Sifra artikla</option> @foreach($artikli as $artikal)<option value="{{$artikal->PLUKod}}" @if($artikal->PLUKod==$stavka->SifraRobe) selected @endif>{{$artikal->PLUKod}}</option> @endforeach </select></td>';
+                            <td><select @if($prijemnica->IndikatorKnjizenja) disabled @endif  class="form-control naziv1 dropdown" required ><option disabled class="defopcija" value="">Naziv artikla</option> @foreach($artikli as $artikal)<option value="{{$artikal->PLUKod}}" @if($artikal->PLUKod==$stavka->SifraRobe) selected @endif>{{$artikal->Naziv}}</option> @endforeach </select></td>';
+                            <td><input  required type="text" disabled class="jm1 form-control" value="{{$stavka->artikal->jedinicamere->Naziv}}" ></td>
+                            <td><input required type="number" @if($prijemnica->IndikatorKnjizenja) disabled @endif class="form-control kolicina1" min="0" step="0.01" name="kolicina[]" value="{{$stavka->Kolicina}}"></td>
+                            <td><input   type="number" disabled class="form-control pdv1" min="0" step="0.01" value="{{$stavka->artikal->poreskastopa->Vrednost}}" ></td>
+                            <td><input  required type="number" @if($prijemnica->IndikatorKnjizenja) disabled @endif  class="form-control nc1" min="0" step="0.01" name="nc[]" value="{{$stavka->NabCena}}"></td>
+                            <td><input required type="number" @if($prijemnica->IndikatorKnjizenja) disabled @endif  class="form-control rabat1" min="0" step="0.01" name="rabat[]" value="{{$stavka->Rabat}}"></td>
+                            <td><input  type="number" disabled class="form-control ncsr1" min="0" step="0.01" value="{{$stavka->NabCena-($stavka->Rabat/100)*$stavka->NabCena}}"></td>
+                            <td><input  type="number" disabled class="form-control ncbp1" min="0" step="0.01" value="{{$stavka->Kolicina*($stavka->NabCena-($stavka->Rabat/100)*$stavka->NabCena)}}"></td>
+                            <td><input  type="number" disabled class="form-control ncp1" min="0" step="0.01" value="{{$stavka->Kolicina*($stavka->NabCena-($stavka->Rabat/100)*$stavka->NabCena)+($stavka->artikal->poreskastopa->Vrednost/100)*($stavka->Kolicina*($stavka->NabCena-($stavka->Rabat/100)*$stavka->NabCena))}}"></td>
+                            @if(!$loop->first)
+                                <td><button type="button" class="btn btn-danger btnremove1 btn-sm">-</button></td>
+                            @endif
+                        </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td><select  class="form-control sifra1 dropdown" required name="sifra[]"><option selected disabled class="defopcija" value="">Sifra artikla</option> @foreach($artikli as $artikal)<option value="{{$artikal->PLUKod}}">{{$artikal->PLUKod}}</option> @endforeach </select></td>';
+                            <td><select   class="form-control naziv1 dropdown" required ><option selected disabled class="defopcija" value="">Naziv artikla</option> @foreach($artikli as $artikal)<option value="{{$artikal->PLUKod}}">{{$artikal->Naziv}}</option> @endforeach </select></td>';
+                            <td><input  required type="text" disabled class="jm1 form-control"  ></td>
+                            <td><input required type="number" class="form-control kolicina1" min="0" step="0.01" name="kolicina[]"></td>
+                            <td><input   type="number" disabled class="form-control pdv1" min="0" step="0.01" ></td>
+                            <td><input  required type="number"  class="form-control nc1" min="0" step="0.01" name="nc[]"></td>
+                            <td><input required type="number"  class="form-control rabat1" min="0" step="0.01" name="rabat[]"></td>
+                            <td><input  type="number" disabled class="form-control ncsr1" min="0" step="0.01" ></td>
+                            <td><input  type="number" disabled class="form-control ncbp1" min="0" step="0.01" ></td>
+                            <td><input  type="number" disabled class="form-control ncp1" min="0" step="0.01" ></td>
+                            {{--                        <td><button type="button" class="btn btn-danger btnremove btn-sm">-</button></td>--}}
+                        </tr>
+                    @endif
+                    </tbody>
+                </table>
+                <div id="napomenadiv" class="col-2">
+                    <label for="napomena" class="">Napomena</label>
+                    <textarea id="napomena" @if($edit && $prijemnica->IndikatorKnjizenja) disabled @endif name="napomena">{{$edit ? $prijemnica->Napomena : ""}}</textarea>
+                </div>
+                <div class="float-right">
+                    <a href="{{route('indexPrijemnica')}}" class="btn btn-warning">Nazad</a>
+                    @if(!$edit || !$prijemnica->IndikatorKnjizenja)
+                    <button type="submit" name="sub" class="btn btn-success ">@if($edit) Sacuvaj izmenu @else Nova Prijemnica @endif</button>
+                    @endif
+                </div>
             </div>
         </div>
-    </div>
     </form>
     <script>
-        // function izracunajUkupno()
-        // {
-        //     $("#nvbp").val(0);
-        //     $("#updv").val(0);
-        //     $("#nvp").val(0);
-        //     let uknvbp=0;
-        //     let ukpdv=0;
-        //     let uknvp=0;
-        //     $(".ncbp1").each(function (index,el) {
-        //         uknvbp+=el.val();
-        //         let pdv=$(this).closest('tr').find('.pdv1').val()*1.00;
-        //         ukpdv+=(el.val())*(pdv/100);
-        //     })
-        //     $(".ncbp").each(function (index,el) {
-        //         uknvbp+=el.val();
-        //         let pdv=$(this).closest('tr').find('.pdv').val()*1.00;
-        //         ukpdv+=(el.val())*(pdv/100);
-        //     })
-        //     $("#nvbp").val(uknvbp);
-        //     $("#updv").val(ukpdv)
-        //     $("#nvp").val(uknvbp+ukpdv)
-        // }
+
         $(document).ready(function (){
             var it=0;
             let nabavnaBezPdv = $("#nvbp");
@@ -460,6 +465,17 @@
                 //uklanjanje starih vrednosti iz zbirova
                 let bp=$(this).closest('tr').find('.ncbp').val()*1.00
                 let lpdv=$(this).closest('tr').find('.pdv').val()*1.00
+                let ipdv=bp*(lpdv/100);
+                nabavnaBezPdv.val(nabavnaBezPdv.val()*1.00-bp)
+                ukPdv.val(ukPdv.val()*1.00-ipdv)
+                nabavnaSaPdv.val(nabavnaSaPdv.val()*1.00-(bp+ipdv))
+                //
+                $(this).closest('tr').remove()
+            })
+            $(document).on('click','.btnremove1',function () {
+                //uklanjanje starih vrednosti iz zbirova
+                let bp=$(this).closest('tr').find('.ncbp1').val()*1.00
+                let lpdv=$(this).closest('tr').find('.pdv1').val()*1.00
                 let ipdv=bp*(lpdv/100);
                 nabavnaBezPdv.val(nabavnaBezPdv.val()*1.00-bp)
                 ukPdv.val(ukPdv.val()*1.00-ipdv)

@@ -13,7 +13,7 @@ class FirmaController extends Controller
 
     public function index()
     {
-        return view('firme.createfirme',['firme'=>Firma::all(),'fiskalniStampaci'=>$this->fiskalni]);
+        return view('firme.firmeform',['edit'=>false,'firma'=>null,'firme'=>Firma::all(),'fiskalniStampaci'=>$this->fiskalni]);
     }
 
     public function show(Firma $firma)
@@ -58,7 +58,7 @@ class FirmaController extends Controller
 
     public function edit(Firma $firma)
     {
-        return view('firme.editfirme',['firme'=>Firma::all(),'firma'=>$firma,'fiskalniStampaci'=>$this->fiskalni]);
+        return view('firme.firmeform',['edit'=>true,'firme'=>Firma::all(),'firma'=>$firma,'fiskalniStampaci'=>$this->fiskalni]);
     }
 
     public function update(Firma $firma)

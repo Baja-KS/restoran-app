@@ -4,15 +4,19 @@
     <thead>
     <th></th>
     <th></th>
-    <th>Broj racuna</th>
+    <th></th>
+    <th>@if($edit) Broj racuna @endif</th>
     <th>Naziv</th>
     <th>Kolicina</th>
     <th>Cena</th>
     </thead>
     <tbody id="dodatestavke">
+    @if($edit)
         @foreach($racuni as $racun)
             @foreach($racun->stavke as $stavka)
                 <tr class="racunRedUnselectable unselectable text-danger" id="tr{{$index++}}">
+                    <td></td>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td><h6>{{$stavka->artikal->Naziv}}</h6></td>
@@ -22,6 +26,8 @@
                 @if($loop->last)
                     <tr style="border-bottom: 2px solid red">
                         <td></td>
+                        <td></td>
+                        <td></td>
                         <td>{{$loop->parent->iteration}}</td>
                         <td></td>
                         <td>Ukupno:</td>
@@ -30,6 +36,7 @@
                 @endif
             @endforeach
         @endforeach
+    @endif
     </tbody>
     <script>
         $(document).ready(function () {

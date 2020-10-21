@@ -67,9 +67,30 @@ class Dokument extends Model
         return VrstaDokumenta::where('Sifra','KLM')->first()->dokumenti;
     }
 
+    public function nivelacije()
+    {
+        return VrstaDokumenta::where('Sifra','NIV')->first()->dokumenti;
+    }
+
+    public function razlikaUCeni()
+    {
+        $ukupno=0;
+        foreach ($this->stavke as $stavka)
+            $ukupno+=$stavka->razlikaUCeni();
+        return $ukupno;
+    }
+
+    public function vrednostPDVpoRazlici()
+    {
+        $ukupno=0;
+        foreach ($this->stavke as $stavka)
+            $ukupno+=$stavka->vrednostPDVpoRazlici();
+        return $ukupno;
+    }
+
     public function knjizenje()
     {
-        if (!$this->IndikatorKnjizenja and $this->vrstaDokumenta->Sifra==='KLM')
+        if (!$this->IndikatorKnjizenja && ($this->vrstaDokumenta->Sifra==='KLM' || $this->vrstaDokumenta->Sifra==='NIV'))
         {
 //            dd($this->stavke);
             foreach ($this->stavke as $stavka)

@@ -46,16 +46,35 @@ class DokumentStavka extends Model
         }
     }
 
+    public function razlikaUCeni()
+    {
+        return ($this->StaraProdajnaCena-$this->ProdCena)*$this->Kolicina;
+    }
+
+    public function vrednostPDVpoRazlici()
+    {
+        return ($this->razlikaUCeni())-($this->razlikaUCeni()/(1+$this->artikal->poreskastopa->Vrednost));
+    }
+
     public function knjizenje()
     {
-
+        $magacin=StavkaMagacina::where('SifraArtikla',$this->SifraRobe)->first();
         if ($this->dokument->vrstaDokumenta->Sifra==='KLM')
         {
-            $magacin=StavkaMagacina::where('SifraArtikla',$this->SifraRobe)->first();
             $ulaz=$magacin->KolicinaUlaza;
             $magacin->update([
                 'KolicinaUlaza'=>$ulaz+$this->Kolicina,
                 'ZadnjaNabavnaCena'=>$this->NabCena
+            ]);
+        }
+        else if($this->dokument->vrstaDokumenta->Sifra==='NIV')
+        {
+            $staraProdajna=$magacin->ZadnjaProdajnaCena;
+            $magacin->update([
+                'ZadnjaProdajnaCena'=>$this->ProdCena
+            ]);
+            $this->update([
+                'StaraProdajnaCena'=>$staraProdajna
             ]);
         }
     }

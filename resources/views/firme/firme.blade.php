@@ -3,13 +3,13 @@
 @section('content')
     @include('layouts.bezstolova')
     <style>
-        .container {
-            display: flex;
-            align-items: center;
-        }
+        /*.container {*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*}*/
     </style>
     <a href="{{route('home')}}" class="btn btn-success">Nazad</a>
-    <div class="col-md-4 justify-content-lg-start px-lg-5">
+    <div class="container col-md-4 justify-content-lg-start px-lg-5">
         <h2>Firme</h2>
         <hr>
         <table class="table table-borderless">

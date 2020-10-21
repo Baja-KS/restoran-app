@@ -63,7 +63,7 @@ class ProdajaController extends Controller
             $racuni=$racuni->whereBetween('created_at',[$od,$do]);
         if(!$svi)
             $racuni=$racuni->latest();
-        $racuni=$racuni->paginate(5);
+        $racuni=$racuni->whereNull('SifKom')->paginate(5);
 
         return view('prodajakonobara.prodajakonobaraTabela',[
             'svi'=>$svi,
