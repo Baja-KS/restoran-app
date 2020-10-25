@@ -34,11 +34,20 @@
                 <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" id="cek" value="cek">Cek</button>
                 <button type="submit" class="btn mx-4 my-4 btn-success" name="placanje" id="kartica" value="kartica">Kartica</button>
             </div>
-
-
+{{--            @if(count($dodatniRacunPoljaStavke))--}}
+{{--                @foreach($dodatniRacunPolja as $polje=>$vrednost)--}}
+{{--                    <input type="hidden" name="{{$polje}}" value="{{$vrednost}}">--}}
+{{--                @endforeach--}}
+{{--                <input type="hidden" name="brojStavki" value="{{count($dodatniRacunPoljaStavke)}}">--}}
+{{--                @for($i=0;$i<count($dodatniRacunPoljaStavke);$i++)--}}
+{{--                    @foreach($dodatniRacunPoljaStavke[$i] as $polje=>$vrednost)--}}
+{{--                        <input type="hidden" name="{{$polje}}[]" value="{{$vrednost}}">--}}
+{{--                    @endforeach--}}
+{{--                @endfor--}}
+{{--            @endif--}}
             <div id="naplataFields" class="naplataSporedno">
                 <label for="ukupno" class="text-light">Ukupno</label>
-                <input type="text" id="ukupno" name="ukupno" value="{{$racuni->sum('UkupnaCena')}}">
+                <input type="text" id="ukupno" name="ukupno" value="{{$cena}}">
 
                 <label for="uplata" class="text-light">Uplata</label>
                 <input type="text" id="uplata" name="uplata">
@@ -46,18 +55,22 @@
                 <label for="povracaj" class="text-light">Povracaj</label>
                 <input type="text" id="povracaj" name="povracaj" value="0">
             </div>
-
+{{--            <input type="hidden" name="racun" value="{{$racun->id}}">--}}
+            @foreach($brojeviRacuna as $brojRacuna)
+                <input type="hidden" name="brojRacuna[]" value="{{$brojRacuna}}">
+            @endforeach
             <div id="naplataFirma" class="naplataSporedno">
                 <div id="naplataFirmaCheck">
                     <label for="stampanjefirma" class="text-light">Stampanje dokumenta uz racun</label>
-                    <input type="checkbox" name="stampanjefirma" id="stampanjefirma" value="1">
+                    <input type="checkbox" name="stampanjefirma" @if($gostID) checked disabled @endif id="stampanjefirma" value="1">
                 </div>
                 <div id="naplataFirmaPolja" style="display: none">
                     <label for="firma" class="text-light">Firma:</label>
-                    <select id="firma" name="firma">
+                    <input type="hidden" name="idGosta" value="{{$gostID ?? 0}}">
+                    <select id="firma" name="firma" @if($gostID) disabled @endif>
                         <option value="" selected disabled>Izaberi firmu</option>
                         @foreach($komitenti as $komitent)
-                            <option value="{{$komitent->Sifra}}" @foreach($racuni as $racun) @if(($racun->gost->Naziv ?? '/')==$komitent->Naziv) selected @endif @endforeach>{{$komitent->Naziv}}</option>
+                            <option value="{{$komitent->Sifra}}" @if($gostID===$komitent->Sifra) selected @endif>{{$komitent->Naziv}}</option>
                         @endforeach
                     </select>
 {{--                    <label for="brisecka" class="text-light">Broj Isecka</label>--}}
@@ -80,7 +93,13 @@
 
         </form>
     </div>
-
+    @if($gostID)
+        <script>
+            $(document).ready(function () {
+                $("#stampanjefirma").val(1)
+            })
+        </script>
+    @endif
     <script>
         $(document).ready(function () {
             let ukupno=$("#ukupno").val()

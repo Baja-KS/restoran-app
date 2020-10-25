@@ -238,10 +238,10 @@
         <div class="col-lg-5 col-md-5 col-sm-5" id="leviDeo">
             <div id="gostlabel" class="row">
                 <label for="gost">Gost:</label>
-                <select id="gost"  class="form-control dropdown" name="gost">
+                <select id="gost"  class="form-control dropdown" @if($edit) disabled @endif name="gost">
                     <option value="" selected>/</option>
                     @foreach($komitenti as $komitent)
-                        <option value="{{$komitent->Sifra}}">{{$komitent->Naziv}}</option>
+                        <option value="{{$komitent->Sifra}}" @if($edit && $racuni[count($racuni)-1]->Gost===$komitent->Sifra)  selected @endif>{{$komitent->Naziv}}</option>
                     @endforeach
                 </select>
                 @foreach($komitenti as $komitent)
@@ -277,7 +277,9 @@
     </div>
     <div class="col-lg-2 col-md-2 col-sm-2 tastaturaNaplata">
         <button type="submit" name="akcija" value="poruci" class="btn btn-danger my-lg-5 py-md-0 my-md-0" id="porudzbina">Porudzbina</button>
-        <button type="submit" class="btn btn-warning py-md-0" name="akcija" value="naplata" id="naplata">Naplata</button>
+        @if($edit && count($racuni)>0)
+            <button type="submit" class="btn btn-warning py-md-0" name="akcija" value="naplata" id="naplata">Naplata</button>
+        @endif
         <input type="text" class="mt-lg-4" id="kolicina"  placeholder="Kolicina">
         <div class="tastatura">
             <p class="btn btn-warning broj " id="1">1</p>
@@ -296,31 +298,39 @@
             <div>
                 <label for="napomena">Napomena</label>
                 <textarea id="napomena" name="napomena"></textarea>
-                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvorigotovina" value="zatvorigotovina" style="display: none">Zatvori Gotovinom</button>
-                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvoricek" value="zatvoricek" style="display: none">Zatvori Cekom</button>
-                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvorikartica" value="zatvorikartica" style="display: none">Zatvori Karticom</button>
+{{--                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvorigotovina" value="zatvorigotovina" style="display: none">Zatvori Gotovinom</button>--}}
+{{--                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvoricek" value="zatvoricek" style="display: none">Zatvori Cekom</button>--}}
+{{--                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvorikartica" value="zatvorikartica" style="display: none">Zatvori Karticom</button>--}}
             </div>
         </div>
         <div id="donji">
 
-            <p class="btn btn-block my-0 py-md-0 py-lg-2 btn-danger" id="zatvori">Zatvori zapoceti racun</p>
+            <button type="submit" class="btn btn-block py-md-0 my-0 py-lg-2 btn-danger" name="akcija" id="zatvorigotovina" value="zatvorigotovina">Zatvori Racun</button>
             <a href="{{route('home')}}" class="btn btn-block py-md-0 my-0 btn-dark py-lg-2">Zatvori kasu</a>
         </div>
     </div>
     </form>
 </div>
 <script>
-    $(document).ready(function () {
-        $("#zatvori").click(function () {
-            $(this).hide()
-            $("#zatvorigotovina").show()
-            $("#zatvorikartica").show()
-            $("#zatvoricek").show()
-        })
-    })
+    // $(document).ready(function () {
+    //     $("#zatvori").click(function () {
+    //         $(this).hide()
+    //         $("#zatvorigotovina").show()
+    //         $("#zatvorikartica").show()
+    //         $("#zatvoricek").show()
+    //     })
+    // })
 </script>
+@if($edit)
+    <script>
+        $(document).ready(function () {
+            $("#popust").val({{$racuni->last()->gost->Popust ?? 0}})
+        })
+    </script>
+@endif
 <script>
     var it={{$index}}
+    var neporuceni=0;
 </script>
 <script>
     function UkupnaCena() {
@@ -437,6 +447,8 @@
                 let id=$(this).attr('id')
                 let naziv=$(this).text()
                 let cena=$("#ac"+id).val()
+                neporuceni++;
+                $("#naplata").hide();
                 let html='<tr class="racunRed novi" id="tr'+it+'"><td><input type="hidden" class="popuststavke" name="popuststavke[]" value="0"></td><td><input type="hidden" class="cenabezpopusta" id="bp'+it+'" value="'+cena+'"></td><td><input type="hidden" name="stavkaid[]" value="'+id+'"></td><td><input type="hidden" class="stavkakolicina" name="stavkakolicina[]" value="1"></td><td><h6>'+naziv+'</h6></td><td><h6 class="kolicinastavke">1.00</h6></td><td><h6 class="cena">'+cena+'</h6></td></tr>'
                 it++
                 $("#dodatestavke").append(html)
@@ -463,6 +475,11 @@
                     bezPopusta.val(trenutna-(kolicina*cenaIzabrane))*/
                     popust()
                     $(".selected").remove()
+                    neporuceni--
+                    if(neporuceni<0)
+                        neporuceni=0;
+                    if(!neporuceni)
+                        $("#naplata").show();
                 })
                 $("#enter").click(function () {
                     let kol = $("#kolicina").val();

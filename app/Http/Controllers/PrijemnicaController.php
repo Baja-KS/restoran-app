@@ -177,7 +177,7 @@ class PrijemnicaController extends Controller
         return Redirect::route('indexPrijemnica');
     }
 
-    public function stampa(Dokument $dokument)
+    public function pregled(Dokument $dokument)
     {
 
         $firma=Firma::all()->first();
@@ -361,6 +361,17 @@ class PrijemnicaController extends Controller
         $fpdf->Cell(40,10,'Odgovorno lice','T',1,'C');
 
         $fpdf->Output('F','prijemnica.pdf',true);
+//        $brojPrimeraka=1;
+//        if(config('app.print'))
+//        {
+//            $stampac = Stampac::firma();
+//            exec('lp -d ' . $stampac->Naziv . ' -n ' . $brojPrimeraka . ' prijemnica.pdf');
+//        }
+        return view('administracija.previewprijemnica');
+    }
+
+    public function stampa()
+    {
         $brojPrimeraka=1;
         if(config('app.print'))
         {

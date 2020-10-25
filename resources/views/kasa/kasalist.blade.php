@@ -4,7 +4,7 @@
     <thead>
     <th></th>
     <th></th>
-    <th></th>
+    <th>@if($edit) Naplati @endif</th>
     <th>@if($edit) Broj racuna @endif</th>
     <th>Naziv</th>
     <th>Kolicina</th>
@@ -12,7 +12,7 @@
     </thead>
     <tbody id="dodatestavke">
     @if($edit)
-        @foreach($racuni as $racun)
+        @foreach($racuni as $i=>$racun)
             @foreach($racun->stavke as $stavka)
                 <tr class="racunRedUnselectable unselectable text-danger" id="tr{{$index++}}">
                     <td></td>
@@ -27,7 +27,7 @@
                     <tr style="border-bottom: 2px solid red">
                         <td></td>
                         <td></td>
-                        <td></td>
+                        <td><input type="checkbox" name="zaNaplatu[]" checked value="{{$i}}"></td>
                         <td>{{$loop->parent->iteration}}</td>
                         <td></td>
                         <td>Ukupno:</td>
@@ -45,6 +45,9 @@
             $("#brisisve").click(function () {
                 $('.racunRed :not(.unselectable)').remove();
                 $("#ukupnaCena").val({{$ukupno}})
+                neporuceni=0;
+                if(!neporuceni)
+                    $("#naplata").show();
                 // popust()
             })
         })

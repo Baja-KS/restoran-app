@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Collection\Collection;
 
 class OtvorenRacun extends Model
 {
@@ -37,6 +38,7 @@ class OtvorenRacun extends Model
     {
         return self::racuniZaSto($sto)->sum('UkupnaCena');
     }
+
 
     public function UkupnaCena()
     {
@@ -135,5 +137,21 @@ class OtvorenRacun extends Model
             $stavka->artikal->magacin->prodaj($stavka->Kolicina);
         }
         OtvorenRacun::destroy($this->brojRacuna);
+    }
+    public static function merge($otvoreniRacuni,$intoCollection=true)
+    {
+        $noviRacun=$otvoreniRacuni->last();
+        $id=$noviRacun->brojRacuna;
+        foreach ($otvoreniRacuni as $racun)
+        {
+            foreach ($racun->stavke as $stavka)
+                $stavka->update(['brRacuna'=>$id]);
+            if($racun !== $noviRacun)
+                $racun->delete();
+        }
+        $noviRacun->update(['UkupnaCena'=>$noviRacun->UkupnaCena()]);
+        if($intoCollection)
+            return collect([$noviRacun]);
+        return $noviRacun;
     }
 }

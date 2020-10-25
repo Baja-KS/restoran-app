@@ -40,10 +40,10 @@
                         <td width="8%">
                             {{--                        <button type="button" class="btn btn-warning" wire:click="editMesto({{$firma->FirmaID}})">Izmeni</button>--}}
                             {{-- <button type="button" class="btn btn-warning" wire:click="edit({{$komitent->KomitentID}})" data-toggle="modal" data-target="#editModal" >Izmeni</button> --}}
-                            <a wire:click="print({{$racun->id}},{{$gotovinski? 'true' : 'false'}})" class="btn btn-info">
+                            <button type="button" wire:click="preview({{$racun->id}},{{$gotovinski? 'true' : 'false'}})"  class="btn btn-info">
                                 <i
                                     class="fa fa-print text-green-500 hover:bg-green-500 hover:text-white p-2 rounded-lg">Stampa</i>
-                            </a>
+                            </button>
                         </td>
                     </tr>
                 @endforeach
@@ -60,5 +60,24 @@
 {{--            </div>--}}
         </div>
 
+    </div>
+    <div wire:ignore.self class="modal h-100 w-100" id="printPreview" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Pregled @if($gotovinski) gotovinskog @endif racuna</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true close-btn">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="previewModalBody">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" wire:click.prevent="close" class="btn btn-secondary close-btn" data-dismiss="modal">Zatvori</button>
+                    <button type="button" wire:click.prevent="print" class="btn btn-primary close-modal">Stampaj</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

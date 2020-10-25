@@ -154,7 +154,8 @@ Route::middleware('auth')->group(function (){
     Route::patch('/administracija/prijemnice/knjizi/{dokument}','PrijemnicaController@proknjizi')->name('proknjiziPrijemnica');
     Route::get('/administracija/prijemnice/izmeni/{dokument}','PrijemnicaController@edit')->name('editPrijemnica');
     Route::patch('/administracija/prijemnice/izmeni/{dokument}/update','PrijemnicaController@update')->name('updatePrijemnica');
-    Route::get('/administracija/prijemnice/stampaj/{dokument}','PrijemnicaController@stampa')->name('stampaPrijemnica');
+    Route::get('/administracija/prijemnice/stampaj/{dokument}/pregled','PrijemnicaController@pregled')->name('pregledPrijemnica');
+    Route::get('/administracija/prijemnice/stampaj/s','PrijemnicaController@stampa')->name('stampaPrijemnica');
 
     Route::get('/administracija/listaracuna',function (){
         return view('administracija.racunilista',['gotovinski'=>false]);

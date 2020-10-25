@@ -40,7 +40,7 @@ class ListaNivelacija extends Component
         $this->sortField=$field;
     }
 
-    public function print(Dokument $dokument)
+    public function preview(Dokument $dokument)
     {
         $firma=Firma::all()->first();
 
@@ -162,12 +162,27 @@ class ListaNivelacija extends Component
         $fpdf->Cell(40,10,'Odgovorno lice','T',1,'C');
 
         $fpdf->Output('F','nivelacija.pdf',true);
+
+        $this->emit('renderNivelacija');
+        $this->emit('previewNivelacija');
+
+    }
+
+    public function print()
+    {
         $brojPrimeraka=1;
         if(config('app.print'))
         {
             $stampac = Stampac::firma();
-            exec('lp -d ' . $stampac->Naziv . ' -n ' . $brojPrimeraka . ' prijemnica.pdf');
+            exec('lp -d ' . $stampac->Naziv . ' -n ' . $brojPrimeraka . ' nivelacija.pdf');
         }
+        $this->emit('printNivelacija');
+    }
+
+    public function close()
+    {
+//        $this->loadPDF=false;
+        $this->emit('printNivelacija');
     }
 
     public function delete(Dokument $dokument)

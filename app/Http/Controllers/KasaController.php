@@ -16,6 +16,7 @@ use Codedge\Fpdf\Fpdf\Fpdf_Javascript;
 use http\Env\Response;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Codedge\Fpdf\Fpdf\Fpdf;
@@ -455,7 +456,6 @@ class KasaController extends Controller
     {
         $size=count(\request('stavkaid') ?? []);
         $popuststavke=[];
-        $ukupnaCena=0;
 //        Log::info(\request('stavka'));
         if ($size==0 and (\request()->input('akcija')==='poruci' or (\request()->input('akcija')==='naplata') and !OtvorenRacun::all()->count()))
         {
@@ -465,30 +465,68 @@ class KasaController extends Controller
             'gost'=>['string','nullable'],
             'napomena'=>['string','nullable'],
         ]);
-        OtvorenRacun::create([
+
+
+        $otvorenRacunPolja=[
             'Sto'=>$sto,
-            'Gost'=>$attributes['gost'],
+            'Gost'=>\request('gost'),
             'Radnik'=>auth()->user()->PK,
             'Napomena'=>$attributes['napomena'],
             'UkupnaCena'=>0,
-        ]);
-        $noviRacun=OtvorenRacun::where('Sto',$sto)->latest()->first();
+        ];
+
+
         $popuststavke=\request('popuststavke');
+        $ukupnaCena=0;
+        $otvorenRacunStavkePolja=[];
         for ($i=0;$i<$size;$i++)
         {
-            OtvorenRacunStavka::create([
-                'brRacuna'=>$noviRacun->brojRacuna,
+            $otvorenRacunStavkePolja[]=[
+                'brRacuna'=>"",
                 'Artikal'=>\request('stavkaid')[$i],
 //                'Kolicina'=>\request('stavkakolicina')[$i]-$popust,
                 'Kolicina'=>\request('stavkakolicina')[$i],
                 'Popust'=>$popuststavke[$i] ?? 0
-            ]);
+            ];
+
+//            $popust=$this->Popust;
+//            $cena=$this->artikal->magacin->ZadnjaProdajnaCena;
+//            $cena-($popust/100*$cena);
+            $popust=$popuststavke[$i];
+            $kolicina=\request('stavkakolicina')[$i];
+            $cena=Artikal::find(\request('stavkaid')[$i])->magacin->ZadnjaProdajnaCena;
+            $ukupnaCena+=($cena-($popust/100*$cena))*$kolicina;
         }
-        $noviRacun->update(['UkupnaCena'=>$noviRacun->UkupnaCena()]);
+        $otvorenRacunPolja['UkupnaCena']=$ukupnaCena;
         if (\request()->input('akcija')==='naplata') {
 //            $racuni=OtvorenRacun::where('Sto',$sto)->get();
 //            $this->izdajRacun($racuni,'Gotovina',null,true);
-            return $this->naplata($sto);
+            $sviRacuni=OtvorenRacun::where('Sto',$sto)->orderBy('created_at','asc')->get();
+            $izabraniRacuni=[];
+            $zaNaplatu=\request('zaNaplatu');
+//            dd($zaNaplatu);
+            if(!$zaNaplatu)
+                return back();
+            foreach ($sviRacuni as $i=>$racun)
+            {
+                if(in_array($i,$zaNaplatu)) {
+                    $izabraniRacuni[] = $racun->brojRacuna;
+                }
+            }
+//            dd($izabraniRacuni);
+//            $racun=OtvorenRacun::merge($izabraniRacuni);
+            return $this->naplata($sto,$izabraniRacuni);
+        }
+        $noviRacun=null;
+        if($size)
+        {
+            OtvorenRacun::create($otvorenRacunPolja);
+            $noviRacun = OtvorenRacun::where('Sto', $sto)->latest()->first();
+            for ($i = 0; $i < $size; $i++) {
+                $otvorenRacunStavkePolja[$i]['brRacuna'] = $noviRacun->brojRacuna;
+                OtvorenRacunStavka::create($otvorenRacunStavkePolja[$i]);
+            }
+            $noviRacun->update(['UkupnaCena'=>$noviRacun->UkupnaCena()]);
         }
         if (\request()->input('akcija')!=='poruci')
         {
@@ -507,10 +545,14 @@ class KasaController extends Controller
                     break;
             }
             $this->zatvori($sto,$nacinPlacanja);
+            return Redirect::route('home');
         }
 
 //        $this->stampajPorudzbinu($noviRacun);
-        $this->stampajPorudzbinu($noviRacun);
+        if($noviRacun)
+        {
+            $this->stampajPorudzbinu($noviRacun);
+        }
         return Redirect::route('home');
 
     }
@@ -520,7 +562,7 @@ class KasaController extends Controller
         $kategorije=Podkategorija::all();
         $radnik=auth()->user();
         $komitenti=Komitent::all();
-        $racuni=OtvorenRacun::where('Sto',$sto)->get();
+        $racuni=OtvorenRacun::where('Sto',$sto)->orderBy('created_at','asc')->get();
 //        $bezPopusta=0;
 //        foreach ($racuni as $racun)
 //        {
@@ -540,15 +582,21 @@ class KasaController extends Controller
         ]);
     }
 
-    public function naplata($sto)
+    public function naplata($sto,$brojeviRacuna)
     {
         $komitenti=Komitent::all();
-        $racuni=OtvorenRacun::where('Sto',$sto)->get();
+        $gostID=OtvorenRacun::find($brojeviRacuna[count($brojeviRacuna)-1])->Gost ?? null;
+        $cena=OtvorenRacun::whereIn('brojRacuna',$brojeviRacuna)->sum('UkupnaCena');
+
+//        $racuni=OtvorenRacun::where('Sto',$sto)->get();
         return view('kasa.naplata',[
             'komitenti'=>$komitenti,
-            'racuni'=>$racuni,
-            'sto'=>$sto
-        ]);
+//            'racuni'=>$racuni,
+            'sto'=>$sto,
+            'brojeviRacuna'=>$brojeviRacuna,
+            'gostID'=>$gostID,
+            'cena'=>$cena
+            ]);
 
     }
 
@@ -556,12 +604,30 @@ class KasaController extends Controller
     {
         $nacinPlacanja="";
         $attributes=[];
-        $zadnjiRacun=OtvorenRacun::all()->last();
-        $racuni=OtvorenRacun::where('Sto',$sto)->get();
+//        $otvorenRacunPolja=[
+//            'Sto'=>\request('Sto'),
+//            'Gost'=>\request('Gost'),
+//            'Radnik'=>\request('Radnik'),
+//            'Napomena'=>\request('Napomena'),
+//            'UkupnaCena'=>\request('UkupnaCena')
+//        ];
+//        $brojStavki=\request('brojStavki');
+//        $otvorenRacunStavkePolja=[];
+//        for ($i=0;$i<$brojStavki;$i++)
+//        {
+//            $otvorenRacunStavkePolja[]=[
+//                'brRacuna'=>\request('brRacuna')[$i],
+//                'Artikal'=>\request('Artikal')[$i],
+//                'Kolicina'=>\request('Kolicina')[$i],
+//                'Popust'=>\request('Popust')[$i]
+//            ];
+//        }
+        $brojeviRacuna=\request('brojRacuna');
+        $racuni=OtvorenRacun::whereIn('brojRacuna',$brojeviRacuna)->where('Sto',$sto)->get();
         switch (\request()->input('placanje'))
         {
             case 'nazad':
-                OtvorenRacun::destroy($zadnjiRacun->brojRacuna);
+//                OtvorenRacun::destroy($zadnjiRacun->brojRacuna);
                 return Redirect::route('editKasa',$sto);
 //            case 'previewFirma':
 //                $this->izdajRacunFirma($racuni,'Cek',\request('firma'),0,true);
@@ -577,29 +643,37 @@ class KasaController extends Controller
                 break;
         }
 //        $brojIsecka=\request('brisecka');
-        $racuni=OtvorenRacun::where('Sto',$sto)->get();
-        $fullpath='';
-        $uplata=\request('uplata') ?? 0;
-        if ($nacinPlacanja=='Gotovina')
-        {
-            if ($uplata<\request('ukupno'))
-                $uplata=\request('ukupno');
-//                return Redirect::route('editKasa',[$sto,'Nedovoljno sredstava']);
-//            if (\request('stampanjefirma'))
-//                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
-            $this->izdajRacun($racuni,$nacinPlacanja,$uplata);
-            $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni',$nacinPlacanja,\request('uplata'),$racuni,Firma::all()->first());
+        $uplata = \request('uplata') ?? 0;
+        if (!\request('stampanjefirma')) {
+//            if($brojStavki)
+//            {
+//                OtvorenRacun::create($otvorenRacunPolja);
+//                $noviRacun = OtvorenRacun::where('Sto', $sto)->latest()->first();
+//                for ($i = 0; $i < $brojStavki; $i++) {
+//                    $otvorenRacunStavkePolja[$i]['brRacuna'] = $noviRacun->brojRacuna;
+//                    OtvorenRacunStavka::create($otvorenRacunStavkePolja[$i]);
+//                }
+//            }
+            $fullpath = '';
+            $racuni = OtvorenRacun::merge($racuni);
+            if ($nacinPlacanja == 'Gotovina') {
+                if ($uplata < \request('ukupno'))
+                    $uplata = \request('ukupno');
+                //                return Redirect::route('editKasa',[$sto,'Nedovoljno sredstava']);
+                //            if (\request('stampanjefirma'))
+                //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
+                $this->izdajRacun($racuni, $nacinPlacanja, $uplata);
+                $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
+            } else {
+                //            if (\request('stampanjefirma'))
+                //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
+                $uplata = \request('ukupno');
+                $this->izdajRacun($racuni, $nacinPlacanja);
+                $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni/', $nacinPlacanja, 0, $racuni, Firma::all()->first());
+            }
         }
-        else {
-//            if (\request('stampanjefirma'))
-//                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
-            $uplata=\request('ukupno');
-            $this->izdajRacun($racuni, $nacinPlacanja);
-            $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni/',$nacinPlacanja,0,$racuni,Firma::all()->first());
-        }
-
-        if (\request('stampanjefirma'))
-            return $this->naplataZaFirmu($sto,$nacinPlacanja,\request('firma'));
+        if (\request('stampanjefirma') || \request('idGosta'))
+            return $this->naplataZaFirmu($sto,$nacinPlacanja,$uplata,(\request('firma') ?? \request('idGosta')),$racuni);
 
         foreach ($racuni as $racun)
             $racun->naplati($nacinPlacanja,$uplata);
@@ -611,26 +685,76 @@ class KasaController extends Controller
 
     }
 
-    private function naplataZaFirmu($sto,$nacinPlacanja,$komitent)
+    private function naplataZaFirmu($sto,$nacinPlacanja,$uplata,$komitent,$racuni)
     {
-        $racuni=OtvorenRacun::where('Sto',$sto)->get();
+//        $brojStavki=count($otvorenRacunStavkePolja);
+//        if($brojStavki)
+//        {
+//            OtvorenRacun::create($otvorenRacunPolja);
+//            $noviRacun = OtvorenRacun::where('Sto', $sto)->latest()->first();
+//            for ($i = 0; $i < $brojStavki; $i++) {
+//                $otvorenRacunStavkePolja[$i]['brRacuna'] = $noviRacun->brojRacuna;
+//                OtvorenRacunStavka::create($otvorenRacunStavkePolja[$i]);
+//            }
+//        }
+//        $racuni=OtvorenRacun::where('Sto',$sto)->get();
 //        $stavke=collect([]);
 //        foreach ($racuni as $racun)
 //            $stavke=$stavke->merge($racun->stavke);
         $this->izdajRacunFirma($racuni,$nacinPlacanja,$komitent,0,true);
+//        $noviRacun->delete();
         return view('kasa.naplatafirma',[
             'sto'=>$sto,
             'komitent'=>$komitent,
-            'nacinPlacanja'=>$nacinPlacanja
+            'nacinPlacanja'=>$nacinPlacanja,
+            'uplata'=>$uplata,
+            'racuni'=>$racuni
         ]);
     }
     public function naplatiZaFirmu($sto)
     {
+//        $otvorenRacunPolja=[
+//            'Sto'=>\request('Sto'),
+//            'Gost'=>\request('Gost'),
+//            'Radnik'=>\request('Radnik'),
+//            'Napomena'=>\request('Napomena'),
+//            'UkupnaCena'=>\request('UkupnaCena')
+//        ];
+//        $brojStavki=\request('brojStavki');
+//        $otvorenRacunStavkePolja=[];
+//        for ($i=0;$i<$brojStavki;$i++)
+//        {
+//            $otvorenRacunStavkePolja[]=[
+//                'brRacuna'=>\request('brRacuna')[$i],
+//                'Artikal'=>\request('Artikal')[$i],
+//                'Kolicina'=>\request('Kolicina')[$i],
+//                'Popust'=>\request('Popust')[$i]
+//            ];
+//        }
+//        OtvorenRacun::create($otvorenRacunPolja);
+//        $noviRacun = OtvorenRacun::where('Sto', $sto)->latest()->first();
+//        for ($i = 0; $i < $brojStavki; $i++) {
+//            $otvorenRacunStavkePolja[$i]['brRacuna'] = $noviRacun->brojRacuna;
+//            OtvorenRacunStavka::create($otvorenRacunStavkePolja[$i]);
+//        }
         $firma=\request('firma');
         $nacinPlacanja=\request('nacinplacanja');
         $brIsecka=\request('brisecka');
         $brPrimeraka=\request('brprimeraka');
-        $racuni=OtvorenRacun::where('Sto',$sto)->get();
+        $brojeviRacuna=\request('brojeviRacuna');
+        $racuni=OtvorenRacun::whereIn('brojRacuna',$brojeviRacuna)->where('Sto',$sto)->get();
+        $uplata = \request('uplata') ?? 0;
+        $racuni=OtvorenRacun::merge($racuni);
+        if ($nacinPlacanja == 'Gotovina') {
+            if ($uplata < \request('ukupno'))
+                $uplata = \request('ukupno');
+            $this->izdajRacun($racuni, $nacinPlacanja, $uplata);
+            $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
+        } else {
+            $uplata = \request('ukupno');
+            $this->izdajRacun($racuni, $nacinPlacanja);
+            $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni/', $nacinPlacanja, 0, $racuni, Firma::all()->first());
+        }
         $this->izdajRacunFirma($racuni,$nacinPlacanja,$firma,$brIsecka,false,$brPrimeraka);
         foreach ($racuni as $racun)
             $racun->naplati($nacinPlacanja,$racun->UkupnaCena,false,$brIsecka);

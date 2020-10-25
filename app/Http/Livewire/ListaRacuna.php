@@ -21,6 +21,7 @@ class ListaRacuna extends Component
     public $sortField;
     public $sortAsc=true;
     public $gotovinski;
+//    public $loadPDF=false;
 
 
     protected $paginationTheme='bootstrap';
@@ -43,8 +44,11 @@ class ListaRacuna extends Component
         $this->sortField=$field;
     }
 
-    public function print(Dokument $dokument,$gotovinski)
+//    protected $listeners=['renderNoviRacun'=>'$refresh'];
+
+    public function preview(Dokument $dokument,$gotovinski)
     {
+//        $this->loadPDF=false;
         $firma=$dokument->komitent;
         $izdaje=Firma::all()->first();
 
@@ -81,7 +85,7 @@ class ListaRacuna extends Component
         $fpdf->SetX(10);
         $fpdf->SetFont('Arial','',10);
         $fpdf->Cell(50,10,'Datum fakturisanja: ',0,0,'L');
-        $fpdf->Cell(50,10,date('d-m-Y'),0,0,'L');
+        $fpdf->Cell(50,10,date_format($dokument->created_at,'d/m/Y'),0,0,'L');
 
         $fpdf->SetFont('Arial','B',10);
         $fpdf->Cell(50,10,'Firma: ','TL',0,'R');
@@ -101,7 +105,7 @@ class ListaRacuna extends Component
         $fpdf->SetX(10);
         $fpdf->SetFont('Arial','',10);
         $fpdf->Cell(50,10,'Datum prometa dobara: ',0,0,'L');
-        $fpdf->Cell(50,10,date('d-m-Y'),0,0,'L');
+        $fpdf->Cell(50,10,date_format($dokument->created_at,'d/m/Y'),0,0,'L');
 
         $fpdf->SetFont('Arial','B',10);
         $fpdf->Cell(50,10,'Adresa: ','L',0,'R');
@@ -186,15 +190,33 @@ class ListaRacuna extends Component
         $fpdf->Line(140,250,180,250);
 
 
-            $fpdf->Output('F', 'firma.pdf', true);
+            $fpdf->Output('F', 'racunfirma.pdf', true);
 //            exec('lp -d '.$stampac->AkcijaStampaca.' racun.pdf');
-            if(config('app.print'))
-            {
-                $stampac=Stampac::firma();
-                exec('lp -d ' . $stampac->Naziv . ' -n ' . ' firma.pdf');
-            }
+//            if(config('app.print'))
+//            {
+//                $stampac=Stampac::firma();
+//                exec('lp -d ' . $stampac->Naziv . ' -n ' . ' firma.pdf');
+//            }
+        $this->emit('renderNoviRacun');
+//        $this->loadPDF=true;
+        $this->emit('previewRacun');
     }
 
+    public function print()
+    {
+        if(config('app.print'))
+            {
+                $stampac=Stampac::firma();
+                exec('lp -d ' . $stampac->Naziv . ' -n ' . ' racunfirma.pdf');
+            }
+        $this->emit('printRacun');
+    }
+
+    public function close()
+    {
+//        $this->loadPDF=false;
+        $this->emit('printRacun');
+    }
 
     public function render()
     {
@@ -216,6 +238,6 @@ class ListaRacuna extends Component
                 ->orWhere('tblKomitenti.Naziv','like','%'.$this->search.'%');
         })->when($this->sortField,function ($query){
             $query->orderBy($this->sortField,$this->sortAsc ? 'asc' : 'desc');
-        })->paginate(5)]);
+        })->paginate(5),'path'=>'/Restoran/public/racunfirma.pdf']);
     }
 }

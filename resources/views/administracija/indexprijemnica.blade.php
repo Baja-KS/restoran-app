@@ -34,7 +34,7 @@
                     </td>
                     @endif
                     <td>
-                        <a href="{{route('stampaPrijemnica',$prijemnica->id)}}" class="btn btn-info">Stampanje</a>
+                        <a href="{{route('pregledPrijemnica',$prijemnica->id)}}" class="btn btn-info">Stampanje</a>
                     </td>
                     @if(!$prijemnica->IndikatorKnjizenja)
                     <td>
