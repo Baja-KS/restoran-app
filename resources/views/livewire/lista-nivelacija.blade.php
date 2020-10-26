@@ -52,7 +52,7 @@
         <a href="{{route('dodajNivelaciju')}}" class="btn btn-success">Nova Nivelacija</a>
     </div>
     <div wire:ignore.self class="modal h-100 w-100" id="printPreview" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pregled nivelacije</h5>
@@ -60,7 +60,7 @@
                     <span aria-hidden="true close-btn">×</span>
                 </button>
             </div>
-            <div class="modal-body" id="previewModalBody">
+            <div class="modal-body h-100" id="previewModalBody">
 
             </div>
             <div class="modal-footer">

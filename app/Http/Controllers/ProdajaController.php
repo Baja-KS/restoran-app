@@ -29,6 +29,7 @@ class ProdajaController extends Controller
         $od=null;
         $do=null;
         $vrstaDok=VrstaDokumenta::where('Sifra','RCM')->first();
+//        $vrstaDokZ=VrstaDokumenta::where('Sifra','KAS')->first();
         $racuni=$vrstaDok->dokumenti();
         if($svi)
         {

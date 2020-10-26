@@ -187,4 +187,18 @@ Route::middleware('auth')->group(function (){
         ]);
     })->name('izmeniNivelaciju');
 
+    Route::get('/administracija/lager/pica',function (){
+        return view('administracija.lagerlista',[
+            'hrana'=>false,
+
+        ]);
+    })->name('listaLagerPica');
+
+    Route::get('/administracija/lager/hrana',function (){
+        return view('administracija.lagerlista',[
+            'hrana'=>true,
+
+        ]);
+    })->name('listaLagerHrana');
+
 });

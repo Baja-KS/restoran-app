@@ -23,8 +23,8 @@
             <a href="{{route('listaGotovinskihRacuna')}}" class="btn mx-2 btn-info">Lista gotovinskih racuna</a>
             <a href="{{route('listaNivelacije')}}" class="btn mx-2 btn-info">Lista nivelacija</a>
             <a href="{{route('indexPrijemnica')}}" class="btn mx-2 btn-info">Lista prijemnica</a>
-            <a href="" class="btn mx-2 btn-info">Lager lista</a>
-            <a href="" class="btn mx-2 btn-info">Lager komponenti</a>
+            <a href="{{route('listaLagerPica')}}" class="btn mx-2 btn-info">Lager pica</a>
+            <a href="{{route('listaLagerHrana')}}" class="btn mx-2 btn-info">Lager hrane</a>
         </div>
         <div id="tab-content" class="container border-danger border">
             @yield('tab-content')

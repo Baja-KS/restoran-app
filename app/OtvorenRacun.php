@@ -103,6 +103,8 @@ class OtvorenRacun extends Model
     public function naplati($nacinPlacanja,$placeno,$zatvoren=false,$brFiskal=null)
     {
         $vrsta=VrstaDokumenta::where('Sifra','RCM')->first();
+//        if($zatvoren)
+//            $vrsta=VrstaDokumenta::where('Sifra','KAS')->first();
         $orgjed=OrganizacionaJedinica::where('Vrsta','R')->first();
         Dokument::create([
             'Dokument'=>$vrsta->id,
