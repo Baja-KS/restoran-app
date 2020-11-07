@@ -62,12 +62,19 @@ class KnjigaSanka extends Component
 
         $artikli=Artikal::whereIn('PLUKod',$this->sifreArtikalaZaDan)->where(function ($query){
             $pica=Kategorija::where('Naziv','Pica')->first()->podkategorije->pluck('SifKat');
-            $hrana=Podkategorija::where('Naziv','Komponente-Hrana')->first()->SifKat;
+            $pica=$pica->merge(Podkategorija::where('Naziv','Komponente-Pica')->first()->SifKat);
+            $hrana=Kategorija::where('Naziv','Hrana')->first()->podkategorije->pluck('SifKat');
+            $hrana=$hrana->merge(Podkategorija::where('Naziv','Komponente-Hrana')->first()->SifKat);
             if($this->pice)
                 $query->whereIn('Kategorija',$pica);
             else
-                $query->where('Kategorija',$hrana);
+                $query->whereIn('Kategorija',$hrana);
         })->get();
+
+//        foreach ($artikli as $artikal)
+//        {
+//
+//        }
 
         $fpdf=new Fpdf('P','mm','A4');
         $fpdf->AddPage();
@@ -145,8 +152,8 @@ class KnjigaSanka extends Component
             $utroseno=$this->prodajaZaDan[$artikal->PLUKod] ?? 0;
 
 //            $grupa=$artikal->podkategorija->glavnaKategorija->Naziv;
-            $ukupniPromet+=$artikal->magacin->ZadnjaProdajnaCena*$utroseno;
-            $ukupnaPVNabavke+=$artikal->magacin->ZadnjaProdajnaCena*$nabavna;
+            $ukupniPromet+=$artikal->grupa()->Naziv!='Komponente' ? $artikal->magacin->ZadnjaProdajnaCena : $artikal->magacin->ZadnjaNabavnaCena*$utroseno;
+            $ukupnaPVNabavke+=$artikal->grupa()->Naziv!='Komponente' ? $artikal->magacin->ZadnjaProdajnaCena : $artikal->magacin->ZadnjaNabavnaCena*$nabavna;
 
             $fpdf->SetX(2);
             $fpdf->Cell(8,10,$i+1,'TB',0,'L');
@@ -158,10 +165,10 @@ class KnjigaSanka extends Component
             $fpdf->Cell(15,10,$preneta+$nabavna,'TB',0,'L');
             $fpdf->Cell(14,10,$preneta+$nabavna-$utroseno,'TB',0,'L');
             $fpdf->Cell(15,10,$utroseno,'TB',0,'L');
-            $fpdf->Cell(20,10,$artikal->magacin->ZadnjaProdajnaCena,'TB',0,'L');
-            $fpdf->Cell(16,10,$this->pice ? $artikal->magacin->ZadnjaProdajnaCena*$utroseno : '-','TB',0,'L');
-            $fpdf->Cell(16,10,!$this->pice ? $artikal->magacin->ZadnjaProdajnaCena*$utroseno : '-','TB',0,'L');
-            $fpdf->Cell(30,10,$artikal->magacin->ZadnjaProdajnaCena*$nabavna,'TB',1,'L');
+            $fpdf->Cell(20,10,$artikal->grupa()->Naziv!='Komponente' ? $artikal->magacin->ZadnjaProdajnaCena : $artikal->magacin->ZadnjaNabavnaCena,'TB',0,'L');
+            $fpdf->Cell(16,10,$this->pice ? ($artikal->grupa()->Naziv!='Komponente' ? $artikal->magacin->ZadnjaProdajnaCena : $artikal->magacin->ZadnjaNabavnaCena)*$utroseno : '-','TB',0,'L');
+            $fpdf->Cell(16,10,!$this->pice ? ($artikal->grupa()->Naziv!='Komponente' ? $artikal->magacin->ZadnjaProdajnaCena : $artikal->magacin->ZadnjaNabavnaCena)*$utroseno : '-','TB',0,'L');
+            $fpdf->Cell(30,10,($artikal->grupa()->Naziv!='Komponente' ? $artikal->magacin->ZadnjaProdajnaCena : $artikal->magacin->ZadnjaNabavnaCena)*$nabavna,'TB',1,'L');
         }
         $fpdf->SetX(-87);
         $fpdf->SetFont('Arial','B',10);
@@ -250,8 +257,14 @@ class KnjigaSanka extends Component
 
         foreach ($nabavka->get() as $stavka)
             $this->nabavkaZaDan[$stavka->PLUKod]=$stavka->Nabavka;
-        foreach ($prodaja->get() as $stavka)
-            $this->prodajaZaDan[$stavka->PLUKod]=$stavka->Prodaja;
+        foreach ($prodaja->get() as $stavka) {
+            $artikal=Artikal::find($stavka->PLUKod);
+            if(!$artikal->Normativ)
+                $this->prodajaZaDan[$stavka->PLUKod] = $stavka->Prodaja;
+            else
+                foreach ($artikal->komponente as $komponenta)
+                    $this->prodajaZaDan[$komponenta->PLUKod]=$stavka->Prodaja*Artikal::kolicinaUMesavini($artikal,$komponenta);
+        }
 
         $this->sifreArtikalaZaDan=array_merge(array_keys($this->nabavkaZaDan),array_keys($this->prodajaZaDan));
 
@@ -266,11 +279,13 @@ class KnjigaSanka extends Component
             'artikliDPU'=>Artikal::whereIn('PLUKod',$this->sifreArtikalaZaDan)
                 ->where(function ($query){
                     $kategorijePicaId=Kategorija::where('Naziv','Pica')->first()->podkategorije->pluck('SifKat');
-                    $kategorijeHranaId=Podkategorija::where('Naziv','Komponente-Hrana')->first()->SifKat;
+                    $kategorijePicaId=$kategorijePicaId->merge(Podkategorija::where('Naziv','Komponente-Pica')->first()->SifKat);
+                    $kategorijeHranaId=Kategorija::where('Naziv','Hrana')->first()->podkategorije->pluck('SifKat');
+                    $kategorijeHranaId=$kategorijeHranaId->merge(Podkategorija::where('Naziv','Komponente-Hrana')->first()->SifKat);
                     if($this->pice)
                         $query->whereIn('Kategorija',$kategorijePicaId);
                     else
-                        $query->where('Kategorija',$kategorijeHranaId);
+                        $query->whereIn('Kategorija',$kategorijeHranaId);
                 })
                 ->paginate(5),
 //            'prodaja'=>$prodajaMap,

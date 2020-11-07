@@ -32,14 +32,14 @@
                         </thead>
                         <tbody>
                         @foreach($artikliDPU as $artikal)
-                            <tr>
-                                <td class="font-weight-bold text-light" >{{$artikal->Naziv}}</td>
-                                <td class="font-weight-bold text-light" >{{$artikal->poreskastopa->Vrednost}}%</td>
-                                <td class="font-weight-bold text-light">{{$artikal->jedinicamere->Naziv}}</td>
-                                <td class="font-weight-bold text-light">{{$nabavkaZaDan[$artikal->PLUKod] ?? 0}}</td>
-                                <td class="font-weight-bold text-light">{{$prodajaZaDan[$artikal->PLUKod] ?? 0}}</td>
-                                <td class="font-weight-bold text-light">{{$artikal->magacin->ZadnjaProdajnaCena}}</td>
-                            </tr>
+                                <tr>
+                                    <td class="font-weight-bold text-light" >{{$artikal->Naziv}}</td>
+                                    <td class="font-weight-bold text-light" >{{$artikal->poreskastopa->Vrednost}}%</td>
+                                    <td class="font-weight-bold text-light">{{$artikal->jedinicamere->Naziv}}</td>
+                                    <td class="font-weight-bold text-light">{{$nabavkaZaDan[$artikal->PLUKod] ?? 0}}</td>
+                                    <td class="font-weight-bold text-light">{{$prodajaZaDan[$artikal->PLUKod] ?? 0}}</td>
+                                    <td class="font-weight-bold text-light">{{$artikal->magacin->ZadnjaProdajnaCena}}</td>
+                                </tr>
                         @endforeach
                         </tbody>
                     </table>

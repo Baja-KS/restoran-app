@@ -46,12 +46,23 @@ class StavkaMagacina extends Model
         $idDokRacun=VrstaDokumenta::where('Sifra','RCM')->first()->id;
         $artikal=$this->artikal;
         $prodatoNaCrno=0;
-        if(!$artikal->Normativ)
+        if($artikal->grupa()->Naziv!='Komponente')
         {
             foreach ($artikal->stavkeDokument as $stavka)
             {
                 if($stavka->dokument->VrstaDok==='z')
                     $prodatoNaCrno+=$stavka->Kolicina;
+            }
+        }
+        else
+        {
+            $stavkeDokumenta=collect([]);
+            foreach ($artikal->mesavine as $mesavina)
+                $stavkeDokumenta=$stavkeDokumenta->merge($mesavina->stavkeDokument);
+            foreach ($stavkeDokumenta as $stavka)
+            {
+                if($stavka->dokument->VrstaDok==='z')
+                    $prodatoNaCrno+=$stavka->Kolicina*Artikal::kolicinaUMesavini($artikal,$stavka->artikal);
             }
         }
         return $prodatoNaCrno;
@@ -65,13 +76,14 @@ class StavkaMagacina extends Model
 
 
         $artikal=$this->artikal;
-        if(!$artikal->Normativ)
+
+        $ulazPosleDatuma=0;
+        $izlazPosleDatuma=0;
+
+        $datum=Carbon::createFromFormat('Y-m-d',$datum)->startOfDay();
+
+        if($artikal->grupa()->Naziv!='Komponente')
         {
-            $ulazPosleDatuma=0;
-            $izlazPosleDatuma=0;
-
-            $datum=Carbon::createFromFormat('Y-m-d',$datum)->startOfDay();
-
             foreach ($artikal->stavkeDokument as $stavka)
             {
                 $datumDok=$stavka->dokument->created_at->startOfDay();
@@ -88,6 +100,39 @@ class StavkaMagacina extends Model
                     }
 
 
+                }
+            }
+            $prodatoNaCrno=0;
+            $naCrnoUracunato ? $prodatoNaCrno=0 : $prodatoNaCrno=$this->prodatoNaCrno();
+            return $this->naStanju()+$prodatoNaCrno+$izlazPosleDatuma-$ulazPosleDatuma;
+        }
+        else
+        {
+            $stavkeDokumenta=collect([]);//ovde idu sve mesavine koji sadrze $artikal koji je komponenta
+            foreach ($artikal->mesavine as $mesavina)
+                $stavkeDokumenta=$stavkeDokumenta->merge($mesavina->stavkeDokument);
+            Log::info($stavkeDokumenta);
+            foreach ($stavkeDokumenta as $stavka)
+            {
+                $datumDok=$stavka->dokument->created_at->startOfDay();
+                if($datum->lte($datumDok))
+                {
+                    if($stavka->dokument->Dokument===$idDokRacun && ($naCrnoUracunato || $stavka->dokument->VrstaDok!='z')) {
+                        $izlazPosleDatuma += $stavka->Kolicina*Artikal::kolicinaUMesavini($stavka->artikal,$artikal);
+//                        Log::info("Kolicina mesavine:".$stavka->Kolicina." Kolicina komponente u mesavini: ".Artikal::kolicinaUMesavini($stavka->artikal,$artikal));
+                    }
+                }
+            }
+            foreach ($artikal->stavkeDokument as $stavka)
+            {
+                $datumDok=$stavka->dokument->created_at->startOfDay();
+//                dd($stavka->dokument->created_at,$datum);
+                if($datum->lte($datumDok))
+                {
+                    if ($stavka->dokument->Dokument===$idDokPrijemnica) {
+                        $ulazPosleDatuma += $stavka->Kolicina;
+//                        Log::info($datumDok->format('Y-m-d')." Za ".$datum->format('Y-m-d')."Ulaz:".$stavka->Kolicina);
+                    }
                 }
             }
             $prodatoNaCrno=0;

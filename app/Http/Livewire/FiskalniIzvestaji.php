@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Dokument;
+use App\VrstaDokumenta;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -27,7 +29,17 @@ class FiskalniIzvestaji extends Component
 
     public function zatvoriDan()
     {
-        //TODO
+        $idRacun=VrstaDokumenta::where('Sifra','RCM')->first()->id;
+        if(!Carbon::now()->between(Carbon::today()->startOfDay(),Carbon::today()->startOfDay()->addHours(5)))
+            return;
+        $racuni=Dokument::where('Dokument',$idRacun)
+            ->whereBetween('created_at',[Carbon::today()->startOfDay(),
+                Carbon::today()->startOfDay()->addHours(5)]);
+        $racuni->update([
+            'created_at'=>Carbon::yesterday()->startOfDay()->addHours(23)->addMinutes(59),
+            'updated_at'=>Carbon::yesterday()->startOfDay()->addHours(23)->addMinutes(59),
+        ]);
+
     }
 
     public function prodatiArtikli()
