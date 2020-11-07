@@ -65,11 +65,12 @@ class LagerKarticaArtikla extends Component
                 ->orderBy('tblDokumenta.created_at','desc')
                 ->where(function ($query){
 //                    $query->where('stpDokumenti.Opis','like','%'.$this->searchDok.'%')
-                        $query->where('tblDokumenta.BrDok','like','%'.$this->searchDok.'%')
-                        ->orWhere('tblDokumenta.created_at','like','%'.$this->searchDok.'%')
-                        ->orWhere('tblDokumentaStavke.Kolicina','like','%'.$this->searchDok.'%')
-                        ->orWhere('tblDokumentaStavke.NabCena','like','%'.$this->searchDok.'%')
-                        ->orWhere('tblDokumentaStavke.ProdCena','like','%'.$this->searchDok.'%');
+//                        $query->where('tblDokumenta.BrDok','like','%'.$this->searchDok.'%')
+//                        ->orWhere('tblDokumenta.created_at','like','%'.$this->searchDok.'%')
+//                        ->orWhere('tblDokumentaStavke.Kolicina','like','%'.$this->searchDok.'%')
+//                        ->orWhere('tblDokumentaStavke.NabCena','like','%'.$this->searchDok.'%')
+//                        ->orWhere('tblDokumentaStavke.ProdCena','like','%'.$this->searchDok.'%');
+                    $query->where('tblDokumenta.created_at','like','%'.$this->searchDok.'%');
                 })->when($this->sortField,function ($query){
                     $query->orderBy($this->sortField,$this->sortAsc ? 'asc' : 'desc');
                 })->paginate(5)

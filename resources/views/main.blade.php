@@ -353,7 +353,8 @@
             @can('admin')
                 <div class="dugmici row-cols-1"><a href="{{route('indexFirma')}}" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1 px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst text-black-50">Firma</span></a></div>
                 <div class="dugmici row-cols-1"><a href="{{route('register')}}" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1 px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst text-black-50">Korisnici</span></a></div>
-                <div class="dugmici row-cols-1"><a href="{{route('indexKategorija')}}" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1 px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0"><span class="tekst text-black-50">Fiskalni izvestaji</span></a></div>
+                <div class="dugmici row-cols-1"><button data-toggle="modal" data-target="#fiskalniIzvestaji" class="btn btn-info btn-block my-lg-4 my-md-2 my-sm-1 px-md-1 py-lg-3 py-md-1 px-sm-0 py-sm-0" type="button"><span class="tekst text-black-50">Fiskalni izvestaji</span></button></div>
+
             @endcan
 
         </div>
@@ -362,5 +363,61 @@
             <button type="submit" id="logout" class="btn btn-danger">Kraj rada</button>
         </form>
     </div>
+    <livewire:fiskalni-izvestaji/>
+    <livewire:knjiga-sanka/>
+    <script type="text/javascript">
+        window.livewire.on('closeFI', () => {
+            $('#fiskalniIzvestaji').modal('hide');
+        });
+        window.livewire.on('dnevniIzvestaj', () => {
+            $('#fiskalniIzvestaji').modal('hide');
+            $('#dnevniIzvestaj').modal('show');
+        });
+        window.livewire.on('confirmDnevni', () => {
+            $('#dnevniIzvestaj').modal('hide');
+            $('#fiskalniIzvestaji').modal('hide');
+        });
+        window.livewire.on('cancelDnevni', () => {
+            $('#dnevniIzvestaj').modal('hide');
+            $('#fiskalniIzvestaji').modal('show');
+        });
+
+
+        window.livewire.on('periodicniIzvestaj', () => {
+            $('#fiskalniIzvestaji').modal('hide');
+            $('#periodicniIzvestaj').modal('show');
+        });
+        window.livewire.on('closePeriodicni', () => {
+            $('#periodicniIzvestaj').modal('hide');
+            $('#fiskalniIzvestaji').modal('show');
+        });
+
+        window.livewire.on('openKnjigaSanka', () => {
+            $('#fiskalniIzvestaji').modal('hide');
+            $('#knjigaSanka').modal('show');
+        });
+        window.livewire.on('closeKnjigaSanka', () => {
+            $('#knjigaSanka').modal('hide');
+            $('#fiskalniIzvestaji').modal('show');
+        });
+
+        window.livewire.on('openPreviewKnjigaSanka', () => {
+            $('#knjigaSanka').modal('hide');
+            $('#dpuPreview').modal('show');
+        });
+        window.livewire.on('closePreviewKnjigaSanka', () => {
+            $('#dpuPreview').modal('hide');
+            $('#knjigaSanka').modal('show');
+        });
+
+        window.livewire.on('renderPreviewKnjigaSanka',()=>{
+            $("#previewModalBodyDPU").empty()
+            let html=''
+            html+='<object data="/Restoran/public/knjigasanka.pdf" type="application/pdf" width="100%">\n' +
+                '                        alt : <a href="/Restoran/public/knjigasanka.pdf">knjigasanka.pdf</a>\n' +
+                '                    </object>'
+            $("#previewModalBodyDPU").append(html)
+        })
+    </script>
 @endsection
 

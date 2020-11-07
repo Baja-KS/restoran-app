@@ -663,13 +663,13 @@ class KasaController extends Controller
                 //            if (\request('stampanjefirma'))
                 //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
                 $this->izdajRacun($racuni, $nacinPlacanja, $uplata);
-                $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
+                $this->formatirajRacun(config('app.homeDir').'Desktop/FiskalniRacuni', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
             } else {
                 //            if (\request('stampanjefirma'))
                 //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
                 $uplata = \request('ukupno');
                 $this->izdajRacun($racuni, $nacinPlacanja);
-                $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni/', $nacinPlacanja, 0, $racuni, Firma::all()->first());
+                $this->formatirajRacun(config('app.homeDir').'Desktop/FiskalniRacuni/', $nacinPlacanja, 0, $racuni, Firma::all()->first());
             }
         }
         if (\request('stampanjefirma') || \request('idGosta'))
@@ -749,11 +749,11 @@ class KasaController extends Controller
             if ($uplata < \request('ukupno'))
                 $uplata = \request('ukupno');
             $this->izdajRacun($racuni, $nacinPlacanja, $uplata);
-            $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
+            $this->formatirajRacun(config('app.homeDir').'Desktop/FiskalniRacuni', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
         } else {
             $uplata = \request('ukupno');
             $this->izdajRacun($racuni, $nacinPlacanja);
-            $this->formatirajRacun('/home/bajaks/Desktop/FiskalniRacuni/', $nacinPlacanja, 0, $racuni, Firma::all()->first());
+            $this->formatirajRacun(config('app.homeDir').'Desktop/FiskalniRacuni/', $nacinPlacanja, 0, $racuni, Firma::all()->first());
         }
         $this->izdajRacunFirma($racuni,$nacinPlacanja,$firma,$brIsecka,false,$brPrimeraka);
         foreach ($racuni as $racun)

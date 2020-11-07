@@ -15,6 +15,10 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'print'=>false,
+
+    'homeDir'=>'/home/bajaks/',
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

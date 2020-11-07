@@ -52,22 +52,22 @@
         <a href="{{route('dodajNivelaciju')}}" class="btn btn-success">Nova Nivelacija</a>
     </div>
     <div wire:ignore.self class="modal h-100 w-100" id="printPreview" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Pregled nivelacije</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true close-btn">×</span>
-                </button>
-            </div>
-            <div class="modal-body h-100" id="previewModalBody">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Pregled nivelacije</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true close-btn">×</span>
+                    </button>
+                </div>
+                <div class="modal-body h-100" id="previewModalBody">
 
-            </div>
-            <div class="modal-footer">
-                <button type="button" wire:click.prevent="close" class="btn btn-secondary close-btn" data-dismiss="modal">Zatvori</button>
-                <button type="button" wire:click.prevent="print" class="btn btn-primary close-modal">Stampaj</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" wire:click.prevent="close" class="btn btn-secondary close-btn" data-dismiss="modal">Zatvori</button>
+                    <button type="button" wire:click.prevent="print" class="btn btn-primary close-modal">Stampaj</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>

@@ -11,7 +11,7 @@
             <div class="modal-body" >
                 <div class="row mb-4">
                     <div class="col">
-                        <input wire:model="searchDok" id="searchDok" class="form-control" type="text" placeholder="Pretrazi...">
+                        <input wire:model="searchDok" id="searchDok" class="form-control" type="date" placeholder="Pretrazi...">
                     </div>
                 </div>
                 <table class="table table-borderless table-responsive">

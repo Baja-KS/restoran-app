@@ -2,7 +2,9 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class StavkaMagacina extends Model
 {
@@ -37,6 +39,62 @@ class StavkaMagacina extends Model
             return min($sadrzajKomponenta);
 
         }
+    }
+
+    public function prodatoNaCrno()
+    {
+        $idDokRacun=VrstaDokumenta::where('Sifra','RCM')->first()->id;
+        $artikal=$this->artikal;
+        $prodatoNaCrno=0;
+        if(!$artikal->Normativ)
+        {
+            foreach ($artikal->stavkeDokument as $stavka)
+            {
+                if($stavka->dokument->VrstaDok==='z')
+                    $prodatoNaCrno+=$stavka->Kolicina;
+            }
+        }
+        return $prodatoNaCrno;
+
+    }
+
+    public function prenetaKolicinaDatuma($datum,$naCrnoUracunato=false)
+    {
+        $idDokRacun=VrstaDokumenta::where('Sifra','RCM')->first()->id;
+        $idDokPrijemnica=VrstaDokumenta::where('Sifra','KLM')->first()->id;
+
+
+        $artikal=$this->artikal;
+        if(!$artikal->Normativ)
+        {
+            $ulazPosleDatuma=0;
+            $izlazPosleDatuma=0;
+
+            $datum=Carbon::createFromFormat('Y-m-d',$datum)->startOfDay();
+
+            foreach ($artikal->stavkeDokument as $stavka)
+            {
+                $datumDok=$stavka->dokument->created_at->startOfDay();
+//                dd($stavka->dokument->created_at,$datum);
+                if($datum->lte($datumDok))
+                {
+                    if($stavka->dokument->Dokument===$idDokRacun && ($naCrnoUracunato || $stavka->dokument->VrstaDok!='z')) {
+                        $izlazPosleDatuma += $stavka->Kolicina;
+//                        Log::info($datumDok->format('Y-m-d')." Za ".$datum->format('Y-m-d')."Izlaz:".$stavka->Kolicina);
+                    }
+                    elseif ($stavka->dokument->Dokument===$idDokPrijemnica) {
+                        $ulazPosleDatuma += $stavka->Kolicina;
+//                        Log::info($datumDok->format('Y-m-d')." Za ".$datum->format('Y-m-d')."Ulaz:".$stavka->Kolicina);
+                    }
+
+
+                }
+            }
+            $prodatoNaCrno=0;
+            $naCrnoUracunato ? $prodatoNaCrno=0 : $prodatoNaCrno=$this->prodatoNaCrno();
+            return $this->naStanju()+$prodatoNaCrno+$izlazPosleDatuma-$ulazPosleDatuma;
+        }
+        return 0;
     }
 
     public function prodaj($kolicina)
