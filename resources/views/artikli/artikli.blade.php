@@ -2,10 +2,13 @@
 
 @section('content')
     @include('layouts.bezstolova')
-    <div class="col-md-6 container">
-        <h2>Artikli</h2>
+    <div class="col-md-6 container" >
+        <div class="container">
+            <h2 class="text-light">Artikli</h2>
+            <a class="btn btn-warning" href="{{route('indexKategorija')}}">Grupe i kategorije</a>
+        </div>
         <hr>
-        <table class="table table-borderless  table-danger" >
+        <table class="table table-borderless text-light" style="background-color: saddlebrown">
             @if($artikli->count()>0)
             <thead>
             <tr>
@@ -24,7 +27,8 @@
             @forelse($artikli as $artikal)
                 <tr>
                     <td><h4>{{$artikal->PLUKod}}</h4></td>
-                    <td><a href="{{route('showArtikal',$artikal->PLUKod)}}"><h4>{{$artikal->Naziv}}</h4></a></td>
+{{--                    <td><a href="{{route('showArtikal',$artikal->PLUKod)}}"><h4>{{$artikal->Naziv}}</h4></a></td>--}}
+                    <td><h4><h4>{{$artikal->Naziv}}</h4></h4></td>
                     <td><h4>{{$artikal->podkategorija->Naziv}}</h4></td>
                     <td><h4>{{$artikal->podkategorija->glavnaKategorija->Naziv}}</h4></td>
                     <td><h4>{{$artikal->jedinicamere->Naziv}}</h4></td>

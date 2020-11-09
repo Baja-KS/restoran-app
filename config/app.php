@@ -19,6 +19,8 @@ return [
 
     'homeDir'=>'/home/bajaks/',
 
+    'brojStolova'=>13,
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

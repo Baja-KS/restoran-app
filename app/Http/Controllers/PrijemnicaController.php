@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use phpDocumentor\Reflection\Types\False_;
 use Yajra\DataTables\Facades\DataTables;
 
 class PrijemnicaController extends Controller
@@ -36,7 +37,7 @@ class PrijemnicaController extends Controller
     {
         return view('administracija.prijemnicaform',[
             'prijemnice'=>Dokument::prijemnice(),
-            'artikli'=>Artikal::zaPrijemnicu(),
+            'artikli'=>Artikal::where('Normativ',false)->get(),
             'komitenti'=>Komitent::all(),
             'brPrijemnice'=>Dokument::sledeciBrDok(VrstaDokumenta::where('Sifra','KLM')->first()),
             'datumPrijemnice'=>Carbon::now()->format("d/m/Y"),
@@ -137,7 +138,7 @@ class PrijemnicaController extends Controller
             'prijemnica'=>$dokument,
             'edit'=>true,
             'prijemnice'=>Dokument::prijemnice(),
-            'artikli'=>Artikal::zaPrijemnicu(),
+            'artikli'=>Artikal::where('Normativ',false)->get(),
             'komitenti'=>Komitent::all(),
             'bezPdv'=>$bezPdv,
             'iznosPdv'=>$iznosPdv,

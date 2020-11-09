@@ -2,51 +2,55 @@
 
 @section('content')
     @include('layouts.bezstolova')
-    <div class="col-md-4 justify-content-lg-start px-lg-5">
-        <h2>Glavne kategorije</h2>
-        <hr>
-        <table>
-        @forelse($kategorije as $kategorija)
-            <tr>
-                <td><a href="{{route('indexPodkategorija',$kategorija->SifKat)}}" class=""><h4>{{$kategorija->Naziv}}</h4></a></td>
-                <td><a href="{{route('editKategorija',$kategorija->SifKat)}}" class="btn btn-warning">Edit</a></td>
-                <td><form action="{{route('destroyKategorija',$kategorija->SifKat)}}" method="POST">
-                     @csrf
-                     @method('DELETE')
-                      <button class="btn btn-danger">Delete</button>
-                    </form></td>
-            </tr>
-        @empty
-            <p>Nema nijedne glavne kategorije</p>
-        @endforelse
-        </table>
-    </div>
-    <div class="col-md-4 ml-5 float-lg-right px-lg-5">
-        <div class="card-body">
-            <form method="POST" action="{{ route('storeKategorija') }}">
-                @csrf
+    <h2 class="text-light">Grupe</h2>
+    <hr>
+    <div class="container-fluid" style="background-color: saddlebrown">
+        <div class="col-md-4 justify-content-lg-start px-lg-5">
 
-                <div class="form-group row">
-                    <label for="skat" class="col-md-4 col-form-label text-md-right">{{ __('Ime glavne kategorije') }}</label>
+            <table>
+                @forelse($kategorije as $kategorija)
+                    <tr>
+                        <td><a href="{{route('indexPodkategorija',$kategorija->SifKat)}}" class=""><h4>{{$kategorija->Naziv}}</h4></a></td>
+                        <td><a href="{{route('editKategorija',$kategorija->SifKat)}}" class="btn btn-warning">Edit</a></td>
+                        <td><form action="{{route('destroyKategorija',$kategorija->SifKat)}}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-danger">Delete</button>
+                            </form></td>
+                    </tr>
+                @empty
+                    <p>Nema nijedne grupe</p>
+                @endforelse
+            </table>
+        </div>
+        <div class="col-md-4 ml-5 float-lg-right px-lg-5">
+            <div class="card-body">
+                <form method="POST" action="{{ route('storeKategorija') }}">
+                    @csrf
 
-                    <div class="col-md-6">
-                        <input id="skat" type="text" class="form-control @error('skat') is-invalid @enderror" name="skat" value="{{ old('skat') }}" required autocomplete="skat" autofocus>
+                    <div class="form-group row">
+                        <label for="skat" class="col-md-4 col-form-label text-md-right text-light">{{ __('Ime grupe') }}</label>
 
-                        @error('skat')
-                        <span class="invalid-feedback" role="alert">
+                        <div class="col-md-6">
+                            <input id="skat" type="text" class="form-control @error('skat') is-invalid @enderror" name="skat" value="{{ old('skat') }}" required autocomplete="skat" autofocus>
+
+                            @error('skat')
+                            <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
-                        @enderror
+                            @enderror
+                        </div>
                     </div>
-                </div>
-                <div class="form-group row mb-0">
-                    <div class="col-md-8 offset-md-4">
-                        <button type="submit" class="btn btn-primary">
-                            {{ __('Dodaj glavnu kategoriju') }}
-                        </button>
+                    <div class="form-group row mb-0">
+                        <div class="col-md-8 offset-md-4">
+                            <button type="submit" class="btn btn-primary">
+                                {{ __('Dodaj grupu') }}
+                            </button>
+                            <a href="{{route('indexArtikal')}}" class="btn btn-primary">Nazad</a>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 @endsection

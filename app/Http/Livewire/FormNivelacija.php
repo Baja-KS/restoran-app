@@ -6,6 +6,7 @@ use App\Artikal;
 use App\Dokument;
 use App\DokumentStavka;
 use App\Firma;
+use App\Kategorija;
 use App\OrganizacionaJedinica;
 use App\VrstaDokumenta;
 use Illuminate\Support\Facades\Redirect;
@@ -191,6 +192,7 @@ class FormNivelacija extends Component
 
     public function render()
     {
-        return view('livewire.form-nivelacija',['artikli'=>Artikal::all()]);
+        $idKomponenti=Kategorija::where('Naziv','Komponente')->first()->podkategorije->pluck('SifKat');
+        return view('livewire.form-nivelacija',['artikli'=>Artikal::whereNotIn('Kategorija',$idKomponenti)->get()]);
     }
 }

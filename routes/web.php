@@ -201,4 +201,8 @@ Route::middleware('auth')->group(function (){
         ]);
     })->name('listaLagerHrana');
 
+    Route::get('/administracija/kasa/',function (){
+        return view('administracija.kasazakljucavanje');
+    })->name('kasaZakljucavanje')->middleware('can:admin');
+
 });

@@ -62,13 +62,17 @@ class LagerLista extends Component
     public function render()
     {
         $idKategorija=collect([]);
-        if($this->hrana)
-            $idKategorija=$idKategorija->merge(Podkategorija::where('Naziv','Komponente-Hrana')->first()->SifKat);
+        if($this->hrana) {
+            $idKategorija = $idKategorija->merge(Kategorija::where('Naziv','Hrana')->first()->podkategorije->pluck('SifKat'));
+            $idKategorija = $idKategorija->merge(Podkategorija::where('Naziv', 'Komponente-Hrana')->first()->SifKat);
+        }
         else {
             $idGrupe=Kategorija::where('Naziv','Pica')->first()->SifKat;
             $idKategorija = $idKategorija->merge(Podkategorija::where('GlavnaKategorija',$idGrupe)->pluck('SifKat'));
+            $idKategorija = $idKategorija->merge(Podkategorija::where('Naziv', 'Komponente-Pica')->first()->SifKat);
         }
         return view('livewire.lager-lista',['artikli'=>Artikal::whereIn('Kategorija',$idKategorija)
+            ->where('Normativ',false)
             ->where(function ($query){
             $query->where('PLUKod','like','%'.$this->search.'%')
                 ->orWhere('Naziv','like','%'.$this->search.'%');

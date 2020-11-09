@@ -8,14 +8,18 @@
              align-items: center;
          }
      </style>
-<div class="container">
+<div class="container text-light" style="background-color: saddlebrown">
+
     <div class="row justify-content-center">
         <div class="col-md-8">
         <form method="POST" action="{{ route('register') }}">
             @csrf
-
+            <div>
+                <h2 class="text-light">Registracija Novog Korisnika</h2>
+                <hr>
+            </div>
             <div class="form-group row">
-                <label for="name" class="col-md-4 col-form-label text-danger text-md-right">{{ __('Ime') }}</label>
+                <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Ime') }}</label>
 
                 <div class="col-md-6">
                     <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
@@ -28,7 +32,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="uid" class="col-md-4 col-form-label text-danger text-md-right">{{ __('Lozinka') }}</label>
+                <label for="uid" class="col-md-4 col-form-label  text-md-right">{{ __('Lozinka') }}</label>
 
                 <div class="col-md-6">
                     <input id="uid" type="password" class="form-control @error('uid') is-invalid @enderror" name="uid" value="{{ old('uid') }}" required autocomplete="uid" autofocus>
@@ -41,7 +45,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="ob" class="col-md-4 col-form-label text-danger text-md-right">{{ __('Objekat') }}</label>
+                <label for="ob" class="col-md-4 col-form-label  text-md-right">{{ __('Objekat') }}</label>
 
                 <div class="col-md-6">
                     <input id="ob" type="number" class="form-control @error('ob') is-invalid @enderror" name="ob" value="{{ old('op') }}" required autocomplete="ob">
@@ -54,7 +58,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="fir" class="col-md-4 col-form-label text-danger text-md-right">{{ __('Firma') }}</label>
+                <label for="fir" class="col-md-4 col-form-label  text-md-right">{{ __('Firma') }}</label>
 
                 <div class="col-md-6">
                     <input id="fir" type="number" class="form-control @error('fir') is-invalid @enderror" name="fir" value="{{ old('fir') }}" required autocomplete="fir">
@@ -67,7 +71,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="ka" class="col-md-4 col-form-label text-danger text-md-right">{{ __('Kasa') }}</label>
+                <label for="ka" class="col-md-4 col-form-label text-md-right">{{ __('Kasa') }}</label>
 
                 <div class="col-md-6">
                     <input id="ka" type="number" class="form-control @error('ka') is-invalid @enderror" name="ka" value="{{ old('ka') }}" required autocomplete="ka">
@@ -80,7 +84,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-md-4 col-form-label text-danger text-md-right" for="admin">Admin:</label>
+                <label class="col-md-4 col-form-label text-md-right" for="admin">Admin:</label>
                 <input type="checkbox" class="form-control" name="admin" value="1">
             </div>
 
@@ -119,10 +123,12 @@
             <div class="form-group row mb-0">
                 <div class="col-md-6 offset-md-4">
                     <button type="submit" class="btn btn-primary">
-                        {{ __('Register') }}
+                        {{ __('Registracija') }}
                     </button>
+                    <a href="{{route('home')}}" class="btn btn-warning">Nazad</a>
                 </div>
             </div>
+
         </form>
         </div>
         <!--

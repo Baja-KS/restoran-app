@@ -32,9 +32,9 @@
                             <td class="font-weight-bold text-light" >{{$stavka->dokument->VrstaDok==='z' ? 'Zatvoren' : $stavka->dokument->vrstaDokumenta->Opis}}</td>
                             <td class="font-weight-bold text-light" >{{$stavka->dokument->BrDok}}</td>
                             <td class="font-weight-bold text-light">{{date_format($stavka->dokument->created_at,'d/m/Y')}}</td>
-                            <td class="font-weight-bold text-light">{{($stavka->dokument->vrstaDokumenta->Sifra==='KLM' ||  $stavka->dokument->vrstaDokumenta->Sifra==='RCM')  ?  $stavka->Kolicina : '-'}}</td>
+                            <td class="font-weight-bold text-light">{{($stavka->dokument->vrstaDokumenta->Sifra==='KLM' ||  $stavka->dokument->vrstaDokumenta->Sifra==='RCM')  ?  ($komponenta ? $mapMesavinaToKolicina[$stavka->SifraRobe]*$stavka->Kolicina : $stavka->Kolicina) : '-'}}</td>
                             <td class="font-weight-bold text-light">{{$stavka->dokument->vrstaDokumenta->Sifra==='KLM' ? $stavka->NabCena : '-'}}</td>
-                            <td class="font-weight-bold text-light">{{($stavka->dokument->vrstaDokumenta->Sifra==='NIV' ||  $stavka->dokument->vrstaDokumenta->Sifra==='RCM' ) ? $stavka->ProdCena : '-'}}</td>
+                            <td class="font-weight-bold text-light">{{(($stavka->dokument->vrstaDokumenta->Sifra==='NIV' ||  $stavka->dokument->vrstaDokumenta->Sifra==='RCM' ) && !$komponenta) ? $stavka->ProdCena : '-'}}</td>
                         </tr>
                     @endforeach
                     </tbody>

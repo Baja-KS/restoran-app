@@ -1,7 +1,7 @@
 @extends('firme.firme')
 
 @section('firme')
-    <div class="card-body">
+    <div class="card-body text-light">
         <form method="POST" action="{{$edit ? route('updateFirma',$firma->FirmaID) : route('storeFirma')}}">
             @csrf
             @method('PATCH')
@@ -176,6 +176,7 @@
                             @endif
                             Firmu
                         </button>
+                        <a href="{{route('home')}}" class="btn btn-success">Nazad</a>
                     </div>
                 </div>
             </div>

@@ -9,11 +9,7 @@ use App\OtvorenRacun;
 use App\OtvorenRacunStavka;
 use App\Podkategorija;
 use App\Stampac;
-use App\ZatvorenRacun;
-use App\ZatvorenRacunStavka;
-use Codedge\Fpdf\Fpdf\Fpdf_autoprint;
-use Codedge\Fpdf\Fpdf\Fpdf_Javascript;
-use http\Env\Response;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +21,7 @@ use PHPUnit\Util\Printer;
 
 class KasaController extends Controller
 {
+
     private function zaSank(OtvorenRacun $otvorenRacun)
     {
         $stavke=$otvorenRacun->zaSank();
@@ -436,6 +433,7 @@ class KasaController extends Controller
 
     public function create($sto,$greska=null)
     {
+        Gate::authorize('accessKasa',$sto);
         $kategorije=Podkategorija::all();
         $radnik=auth()->user();
         $komitenti=Komitent::all();
@@ -454,6 +452,7 @@ class KasaController extends Controller
 
     public function store($sto)
     {
+        Gate::authorize('accessKasa',$sto);
         $size=count(\request('stavkaid') ?? []);
         $popuststavke=[];
 //        Log::info(\request('stavka'));
@@ -559,6 +558,9 @@ class KasaController extends Controller
 
     public function edit($sto,$greska=null)
     {
+        if(Gate::denies('accessKasa',$sto))
+            return back();
+        Gate::authorize('accessKasa',$sto);
         $kategorije=Podkategorija::all();
         $radnik=auth()->user();
         $komitenti=Komitent::all();
@@ -584,6 +586,7 @@ class KasaController extends Controller
 
     public function naplata($sto,$brojeviRacuna)
     {
+        Gate::authorize('accessKasa',$sto);
         $komitenti=Komitent::all();
         $gostID=OtvorenRacun::find($brojeviRacuna[count($brojeviRacuna)-1])->Gost ?? null;
         $cena=OtvorenRacun::whereIn('brojRacuna',$brojeviRacuna)->sum('UkupnaCena');
@@ -602,6 +605,7 @@ class KasaController extends Controller
 
     public function naplati($sto)
     {
+        Gate::authorize('accessKasa',$sto);
         $nacinPlacanja="";
         $attributes=[];
 //        $otvorenRacunPolja=[
@@ -687,6 +691,7 @@ class KasaController extends Controller
 
     private function naplataZaFirmu($sto,$nacinPlacanja,$uplata,$komitent,$racuni)
     {
+        Gate::authorize('accessKasa',$sto);
 //        $brojStavki=count($otvorenRacunStavkePolja);
 //        if($brojStavki)
 //        {
@@ -713,6 +718,7 @@ class KasaController extends Controller
     }
     public function naplatiZaFirmu($sto)
     {
+        Gate::authorize('accessKasa',$sto);
 //        $otvorenRacunPolja=[
 //            'Sto'=>\request('Sto'),
 //            'Gost'=>\request('Gost'),
@@ -763,6 +769,7 @@ class KasaController extends Controller
 
     private function zatvori($sto,$nacinPlacanja)
     {
+        Gate::authorize('accessKasa',$sto);
         $racuni=OtvorenRacun::where('Sto',$sto)->get();
         foreach ($racuni as $racun)
             $racun->zatvori($nacinPlacanja,$racun->UkupnaCena);
