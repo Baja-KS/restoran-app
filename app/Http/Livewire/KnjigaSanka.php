@@ -9,7 +9,6 @@ use App\Stampac;
 use App\VrstaDokumenta;
 use Carbon\Carbon;
 use Codedge\Fpdf\Fpdf\Fpdf;
-use Codedge\Fpdf\Fpdf\PDF_MC_Table;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -206,7 +205,7 @@ class KnjigaSanka extends Component
         $this->emit('closePreviewKnjigaSanka');
     }
 
-    public function printDPI()
+    public function printDPU()
     {
         $brojPrimeraka=1;
         if(config('app.print'))
@@ -214,7 +213,7 @@ class KnjigaSanka extends Component
             $stampac = Stampac::firma();
             exec('lp -d ' . $stampac->Naziv . ' -n ' . $brojPrimeraka . ' knjigasanka.pdf');
         }
-        $this->emit('closePreviewKnjigaSanka');
+        $this->emit('printKnjigaSanka');
     }
 
     public function closeKS()

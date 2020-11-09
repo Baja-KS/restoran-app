@@ -5,18 +5,22 @@ namespace App\Http\Livewire;
 use App\Dokument;
 use App\VrstaDokumenta;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 
 class FiskalniIzvestaji extends Component
 {
     private function generateFile($name,$text)
     {
-        $path=config('app.homeDir').'fplink/input/';
+        $path='storage/';
         $ext='.inp';
         $fullpath=$path.$name.$ext;
         $file=fopen($fullpath,'w');
         fwrite($file,$text);
         fclose($file);
+//        return Storage::disk('public')->download($name.$ext);
+//        return response()->download(storage_path('app/public/'.$name.$ext));
+        $this->emit('downloadIzvestaj',$fullpath);
     }
 
     public $od;

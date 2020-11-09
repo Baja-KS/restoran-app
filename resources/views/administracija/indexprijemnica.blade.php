@@ -60,18 +60,11 @@
         <a href="{{route('createPrijemnica')}}" class="btn btn-success">Nova Prijemnica</a>
     </div>
 </div>
-{{--    <script>--}}
-{{--        $(document).ready(function (){--}}
-{{--            $("#listaPrijemnica").DataTable({--}}
-{{--                processing:true,--}}
-{{--                serverSide:true,--}}
-{{--                ajax:"{{route('tablePrijemnica')}}",--}}
-{{--                columns: [--}}
-{{--                    {data:'BrDok',name:"Br.prijemnice"},--}}
-{{--                    {data:'BrFiskal',name:"Broj dokumenta"},--}}
-{{--                    {data:'created_at',name:'Datum dokumenta'}--}}
-{{--                ]--}}
-{{--            })--}}
-{{--        })--}}
-{{--    </script>--}}
+    <script>
+        $(document).ready(function (){
+            @if(session()->has('prijemnicaStampa'))
+                window.open('/Restoran/public/prijemnica.pdf','_blank')
+            @endif
+        })
+    </script>
 @endsection

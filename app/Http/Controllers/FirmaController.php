@@ -23,6 +23,8 @@ class FirmaController extends Controller
 
     public function store()
     {
+        if(Firma::all()->count())
+            return Redirect::route('indexFirma');
         $attributes=\request()->validate([
             'naziv'=>['required','string','max:40','min:1'],
             'adresa'=>['required','string','max:40','min:1'],

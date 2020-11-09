@@ -21,6 +21,10 @@
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
         <!-- Styles -->
 
+        @if(session()->has('downloadFiskalniRacun'))
+            <meta http-equiv="refresh" content="5;url={{ session()->get('downloadFiskalniRacun') }}">
+        @endif
+
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="/resources/demos/style.css">
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>

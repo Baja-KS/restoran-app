@@ -379,6 +379,8 @@ class PrijemnicaController extends Controller
             $stampac = Stampac::firma();
             exec('lp -d ' . $stampac->Naziv . ' -n ' . $brojPrimeraka . ' prijemnica.pdf');
         }
+        else
+            session()->flash('prijemnicaStampa','prijemnica.pdf');
         return Redirect::route('indexPrijemnica');
     }
 }

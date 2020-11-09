@@ -3,6 +3,7 @@
 @section('content')
     @include('layouts.bezstolova')
     <h2 class="text-light">Firme</h2>
+{{--    <a class="btn btn-primary" href="{{route('indexStampac')}}">Stampaci</a>--}}
     <hr>
     <div class="container-fluid" style="background-color: saddlebrown">
         <div class="container col-md-4 justify-content-lg-start px-lg-5">

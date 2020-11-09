@@ -168,14 +168,16 @@
                 <br>
                 <div class="form-group row mb-0">
                     <div class="col-md-8 offset-md-4">
+                        @if($edit || !$firme->count())
                         <button type="submit" class="btn btn-primary">
                             @if($edit)
                                 Izmeni
-                            @else
+                            @elseif($firme)
                                 Dodaj
                             @endif
                             Firmu
                         </button>
+                        @endif
                         <a href="{{route('home')}}" class="btn btn-success">Nazad</a>
                     </div>
                 </div>

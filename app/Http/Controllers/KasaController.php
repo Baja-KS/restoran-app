@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Codedge\Fpdf\Fpdf\Fpdf;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Response;
 use phpDocumentor\Reflection\File;
 use PHPUnit\Util\Printer;
 
@@ -54,12 +56,13 @@ class KasaController extends Controller
             }
 //        $fpdf->IncludeJS("print();");
             $fpdf->Output('F','sank.pdf',true);
+
             if(config('app.print')) {
                 $stampac=Stampac::sank();
                 exec('lp -d ' . $stampac->Naziv . ' sank.pdf');
             }
-//        return Redirect::route('home');
-//        exit();
+            else
+                \session()->flash('Sank','sank.pdf');
         }
     }
     private function zaKuhinju(OtvorenRacun $otvorenRacun)
@@ -98,12 +101,8 @@ class KasaController extends Controller
                 $stampac=Stampac::kuhinja();
                 exec('lp -d ' . $stampac->Naziv . ' kuhinja.pdf');
             }
-//            $opSys=php_uname('s');
-//            if ($opSys=='Linux')
-//                exec('lp -d kuhinja kuhinja.pdf');
-//            elseif (strtoupper(substr($opSys, 0, 3)) === 'WIN')
-
-//        exit();
+            else
+                \session()->flash('Kuhinja','kuhinja.pdf');
         }
 
     }
@@ -170,6 +169,10 @@ class KasaController extends Controller
             {
                 $stampac=Stampac::racun();
                 exec('lp -d ' . $stampac->Naziv . ' racun.pdf');
+            }
+            else
+            {
+                session()->flash('izdatRacun','racun.pdf');
             }
         }
     }
@@ -332,6 +335,8 @@ class KasaController extends Controller
                 $stampac=Stampac::firma();
                 exec('lp -d ' . $stampac->Naziv . ' -n ' . $brojPrimeraka . ' firma.pdf');
             }
+            else
+                session()->flash('izdatRacunFirma','firma.pdf');
         }
 
 
@@ -344,6 +349,7 @@ class KasaController extends Controller
     {
         $this->zaSank($otvorenRacun);
         $this->zaKuhinju($otvorenRacun);
+
         return Redirect::route('home');
     }
 
@@ -427,6 +433,9 @@ class KasaController extends Controller
         $file=fopen($fullpath,'w');
         fwrite($file,$text);
         fclose($file);
+
+        \session()->flash('downloadFiskalniRacun',$fullpath);
+//        return response()->download(storage_path('app/public/fiskalniracun'.$ext));
 
 //        return $fullpath;
     }
@@ -551,6 +560,7 @@ class KasaController extends Controller
         if($noviRacun)
         {
             $this->stampajPorudzbinu($noviRacun);
+
         }
         return Redirect::route('home');
 
@@ -667,13 +677,13 @@ class KasaController extends Controller
                 //            if (\request('stampanjefirma'))
                 //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
                 $this->izdajRacun($racuni, $nacinPlacanja, $uplata);
-                $this->formatirajRacun(config('app.homeDir').'Desktop/FiskalniRacuni', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
+                $this->formatirajRacun('storage', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
             } else {
                 //            if (\request('stampanjefirma'))
                 //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
                 $uplata = \request('ukupno');
                 $this->izdajRacun($racuni, $nacinPlacanja);
-                $this->formatirajRacun(config('app.homeDir').'Desktop/FiskalniRacuni/', $nacinPlacanja, 0, $racuni, Firma::all()->first());
+                $this->formatirajRacun('storage', $nacinPlacanja, 0, $racuni, Firma::all()->first());
             }
         }
         if (\request('stampanjefirma') || \request('idGosta'))
@@ -685,6 +695,9 @@ class KasaController extends Controller
 //        $pos=strrpos($fullpath,'/') ?? 0;
 //        $fileName=substr($fullpath,$pos);
 //        \response()->download($fullpath,$fileName,);
+//        Redirect::to('public');
+//        return response()->download(storage_path('app/public/fiskalniracun.inp'));
+//        Storage::disk('public')->download('fiskalniracun.inp');
         return Redirect::route('home');
 
     }
@@ -755,11 +768,11 @@ class KasaController extends Controller
             if ($uplata < \request('ukupno'))
                 $uplata = \request('ukupno');
             $this->izdajRacun($racuni, $nacinPlacanja, $uplata);
-            $this->formatirajRacun(config('app.homeDir').'Desktop/FiskalniRacuni', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
+            $this->formatirajRacun('storage', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
         } else {
             $uplata = \request('ukupno');
             $this->izdajRacun($racuni, $nacinPlacanja);
-            $this->formatirajRacun(config('app.homeDir').'Desktop/FiskalniRacuni/', $nacinPlacanja, 0, $racuni, Firma::all()->first());
+            $this->formatirajRacun('storage', $nacinPlacanja, 0, $racuni, Firma::all()->first());
         }
         $this->izdajRacunFirma($racuni,$nacinPlacanja,$firma,$brIsecka,false,$brPrimeraka);
         foreach ($racuni as $racun)

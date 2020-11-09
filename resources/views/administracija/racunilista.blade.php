@@ -7,6 +7,7 @@
 
         window.livewire.on('printRacun', () => {
             $('#printPreview').modal('hide');
+            window.open('/Restoran/public/racunfirma.pdf')
         });
         window.livewire.on('previewRacun', () => {
 

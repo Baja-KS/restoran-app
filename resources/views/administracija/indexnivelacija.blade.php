@@ -7,6 +7,7 @@
 
         window.livewire.on('printNivelacija', () => {
             $('#printPreview').modal('hide');
+            window.open('/Restoran/public/nivelacija.pdf')
         });
         window.livewire.on('previewNivelacija', () => {
 

@@ -365,6 +365,35 @@
     </div>
     <livewire:fiskalni-izvestaji/>
     <livewire:knjiga-sanka/>
+    <script>
+{{--        @if(session()->has('Sank'))--}}
+{{--        window.open({{session()->get('Sank')}},'_blank')--}}
+{{--        @endif--}}
+{{--        @if(session()->has('Kuhinja'))--}}
+{{--        window.open({{session()->get('Kuhinja')}},'_blank')--}}
+{{--        @endif--}}
+        $(document).ready(function () {
+{{--        @if(session()->has('Sank') || session()->has('Kuhinja'))--}}
+{{--        window.refresh()--}}
+{{--        // console.log('sank')--}}
+{{--        @endif--}}
+
+        @if(session()->has('Sank'))
+            window.open('sank.pdf','_blank')
+    // console.log('sank')
+        @endif
+        @if(session()->has('Kuhinja'))
+            window.open('kuhinja.pdf','_blank')
+    // console.log('kuhinja')
+        @endif
+        @if(session()->has('izdatRacun'))
+            window.open('racun.pdf','_blank')
+        @endif
+        @if(session()->has('izdatRacunFirma'))
+            window.open('firma.pdf','_blank')
+        @endif
+})
+    </script>
     <script type="text/javascript">
         window.livewire.on('closeFI', () => {
             $('#fiskalniIzvestaji').modal('hide');
@@ -409,6 +438,11 @@
             $('#dpuPreview').modal('hide');
             $('#knjigaSanka').modal('show');
         });
+        window.livewire.on('printKnjigaSanka', () => {
+            $('#dpuPreview').modal('hide');
+            $('#knjigaSanka').modal('show');
+            window.open('/Restoran/public/knjigasanka.pdf')
+        });
 
         window.livewire.on('renderPreviewKnjigaSanka',()=>{
             $("#previewModalBodyDPU").empty()
@@ -418,6 +452,13 @@
                 '                    </object>'
             $("#previewModalBodyDPU").append(html)
         })
+
+        window.livewire.on('downloadIzvestaj', path => {
+            // open the download in a new tab/window to
+            // prevent livewire component from freezing
+            window.open(path, '_blank');
+        });
+
     </script>
 @endsection
 
