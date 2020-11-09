@@ -304,22 +304,25 @@
             </div>
         </div>
         <div id="donji">
-
-            <button type="submit" class="btn btn-block py-md-0 my-0 py-lg-2 btn-danger" name="akcija" id="zatvorigotovina" value="zatvorigotovina">Zatvori Racun</button>
+            <livewire:zatvaranje-racuna-kasa/>
+            <button type="submit" class="btn btn-block py-md-0 my-0 py-lg-2 btn-danger" name="akcija" id="zatvorigotovina" value="zatvorigotovina">Z</button>
             <a href="{{route('home')}}" class="btn btn-block py-md-0 my-0 btn-dark py-lg-2">Zatvori kasu</a>
         </div>
     </div>
     </form>
 </div>
 <script>
-    // $(document).ready(function () {
-    //     $("#zatvori").click(function () {
-    //         $(this).hide()
-    //         $("#zatvorigotovina").show()
-    //         $("#zatvorikartica").show()
-    //         $("#zatvoricek").show()
-    //     })
-    // })
+    $(document).ready(function () {
+        window.livewire.on('zOpen',()=>{
+            $("#zRacun").modal('show')
+        })
+        window.livewire.on('zClose',()=>{
+            $("#zRacun").modal('hide')
+        })
+        window.livewire.on('zDownload',(path)=>{
+            window.open(path,'_blank')
+        })
+    })
 </script>
 @if($edit)
     <script>
