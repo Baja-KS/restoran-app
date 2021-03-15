@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/prosofti/public_html/restoran
+    - /bin/cp -R * $DEPLOYPATH
