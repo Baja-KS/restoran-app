@@ -27,6 +27,8 @@ Route::middleware('auth')->group(function (){
     Route::get('/', function () {
         return view('main');
     });
+    Route::get('/users/{user}/edit','UserController@edit')->name('editKorisnik');
+    Route::patch('/users/{user}/update','UserController@update')->name('updateKorisnik');
     //kategorije i podkategorije
     Route::get('/kategorije','KategorijaController@index')->name('indexKategorija');
     Route::post('/kategorije/dodajKategoriju','KategorijaController@store')->name('storeKategorija');

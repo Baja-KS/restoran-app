@@ -3,17 +3,18 @@
 @section('userForm')
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('updateKorisnik',$korisnik->PK) }}">
                 @csrf
+                @method('PATCH')
                 <div>
-                    <h2 class="text-light">Registracija Novog Korisnika</h2>
+                    <h2 class="text-light">Izmena korisnika</h2>
                     <hr>
                 </div>
                 <div class="form-group row">
                     <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Ime') }}</label>
 
                     <div class="col-md-6">
-                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                        <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ $korisnik->CompleteName }}" required autocomplete="name" autofocus>
 
                         @error('name')
                         <span class="invalid-feedback" role="alert">
@@ -26,7 +27,7 @@
                     <label for="uid" class="col-md-4 col-form-label  text-md-right">{{ __('Lozinka') }}</label>
 
                     <div class="col-md-6">
-                        <input id="uid" type="password" class="form-control @error('uid') is-invalid @enderror" name="uid" value="{{ old('uid') }}" required autocomplete="uid" autofocus>
+                        <input id="uid" type="password" class="form-control @error('uid') is-invalid @enderror" name="uid" value="{{ $korisnik->UserID }}" required autocomplete="uid" autofocus>
 
                         @error('uid')
                         <span class="invalid-feedback" role="alert">
@@ -39,7 +40,7 @@
                     <label for="ob" class="col-md-4 col-form-label  text-md-right">{{ __('Objekat') }}</label>
 
                     <div class="col-md-6">
-                        <input id="ob" type="number" class="form-control @error('ob') is-invalid @enderror" name="ob" value="{{ old('op') }}" required autocomplete="ob">
+                        <input id="ob" type="number" class="form-control @error('ob') is-invalid @enderror" name="ob" value="{{ $korisnik->Objekat }}" required autocomplete="ob">
 
                         @error('ob')
                         <span class="invalid-feedback" role="alert">
@@ -52,7 +53,7 @@
                     <label for="fir" class="col-md-4 col-form-label  text-md-right">{{ __('Firma') }}</label>
 
                     <div class="col-md-6">
-                        <input id="fir" type="number" class="form-control @error('fir') is-invalid @enderror" name="fir" value="{{ old('fir') }}" required autocomplete="fir">
+                        <input id="fir" type="number" class="form-control @error('fir') is-invalid @enderror" name="fir" value="{{ $korisnik->Firma }}" required autocomplete="fir">
 
                         @error('fir')
                         <span class="invalid-feedback" role="alert">
@@ -65,7 +66,7 @@
                     <label for="ka" class="col-md-4 col-form-label text-md-right">{{ __('Kasa') }}</label>
 
                     <div class="col-md-6">
-                        <input id="ka" type="number" class="form-control @error('ka') is-invalid @enderror" name="ka" value="{{ old('ka') }}" required autocomplete="ka">
+                        <input id="ka" type="number" class="form-control @error('ka') is-invalid @enderror" name="ka" value="{{ $korisnik->Kasa }}" required autocomplete="ka">
 
                         @error('ka')
                         <span class="invalid-feedback" role="alert">
@@ -76,15 +77,16 @@
                 </div>
                 <div class="form-group row">
                     <label class="col-md-4 col-form-label text-md-right" for="admin">Admin:</label>
-                    <input type="checkbox" class="form-control" name="admin" value="1">
+                    <input type="checkbox" class="form-control" name="admin" @if($korisnik->isAdmin()) checked @endif value="1">
                 </div>
 
                 <div class="form-group row mb-0">
                     <div class="col-md-6 offset-md-4">
                         <button type="submit" class="btn btn-primary">
-                            {{ __('Registracija') }}
+                            {{ __('Sacuvaj izmene') }}
                         </button>
                         <a href="{{route('home')}}" class="btn btn-warning">Nazad</a>
+                        <a href="{{route('register')}}" class="btn btn-warning">Novi korisnik</a>
                     </div>
                 </div>
 

@@ -677,13 +677,13 @@ class KasaController extends Controller
                 //            if (\request('stampanjefirma'))
                 //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
                 $this->izdajRacun($racuni, $nacinPlacanja, $uplata);
-                $this->formatirajRacun('storage', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
+                $this->formatirajRacun('../storage', $nacinPlacanja, \request('uplata'), $racuni, Firma::all()->first());
             } else {
                 //            if (\request('stampanjefirma'))
                 //                $this->izdajRacunFirma($racuni,$nacinPlacanja,\request('firma'),$brojIsecka);
                 $uplata = \request('ukupno');
                 $this->izdajRacun($racuni, $nacinPlacanja);
-                $this->formatirajRacun('storage', $nacinPlacanja, 0, $racuni, Firma::all()->first());
+                $this->formatirajRacun('../storage', $nacinPlacanja, 0, $racuni, Firma::all()->first());
             }
         }
         if (\request('stampanjefirma') || \request('idGosta'))
