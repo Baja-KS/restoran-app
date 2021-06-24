@@ -16,8 +16,8 @@ class ArtikalController extends Controller
 {
     public function index()
     {
-        $artikli=Artikal::orderBy('created_at','desc')->paginate(5);
-        return view('artikli.artikli',['artikli'=>$artikli]);
+//        $artikli=Artikal::orderBy('created_at','desc')->paginate(5);
+        return view('artikli.artikli');
     }
 
     public function show(Artikal $artikal)
