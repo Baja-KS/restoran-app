@@ -224,14 +224,6 @@
             @foreach($kategorije as $kategorija)
                 @if($kategorija->glavnaKategorija->Naziv!="Komponente")
                     <span class="btn  btn-warning kategorija mx-lg-2 my-lg-2 mx-md-0 my-md-0 mx-sm-0 my-sm-0"  id="{{$kategorija->SifKat}}">{{$kategorija->Naziv}}</span>
-                    <input type="hidden" id="br{{$kategorija->SifKat}}" value="{{$kategorija->artikli->count()}}">
-                    @for($i=0;$i<$kategorija->artikli->count();$i++)
-                        @if($kategorija->artikli[$i]->Aktivan)
-                        <input type="hidden" class="i{{$kategorija->SifKat}}" id="i{{$kategorija->SifKat}}_{{$i}}" value="{{$kategorija->artikli[$i]->PLUKod}}">
-                        <input type="hidden" class="n{{$kategorija->SifKat}}"  id="n{{$kategorija->SifKat}}_{{$i}}" value="{{$kategorija->artikli[$i]->Naziv}}">
-                        <input type="hidden" class="c{{$kategorija->SifKat}}"  id="c{{$kategorija->SifKat}}_{{$i}}" value="{{$kategorija->artikli[$i]->magacin->ZadnjaProdajnaCena}}">
-                        @endif
-                    @endfor
                 @endif
             @endforeach
         </div>
@@ -260,7 +252,6 @@
                 <div class="bottomContainer">
                     <p class="btn my-0 py-lg-2 py-md-0 py-sm-0 btn-danger" id="brisisve">Obrisi sve stavke</p>
                     <p class="btn my-0 py-lg-2 py-md-0 py-sm-0 btn-danger" id="brisiizabranu">Obrisi izabranu stavku</p>
-{{--                    <input type="hidden" id="bezPopusta" name="bezPopusta" value="">--}}
                     <label class="text-primary font-weight-bold" for="ukupnaCena">Ukupna Cena</label>
                     <input type="text"  id="ukupnaCena" name="ukupnaCena" value="{{$ukupno ?? 0}}" disabled>
                     <label class="text-primary font-weight-bold" for="popust">Popust</label>
@@ -298,9 +289,6 @@
             <div>
                 <label for="napomena">Napomena</label>
                 <textarea id="napomena" name="napomena"></textarea>
-{{--                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvorigotovina" value="zatvorigotovina" style="display: none">Zatvori Gotovinom</button>--}}
-{{--                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvoricek" value="zatvoricek" style="display: none">Zatvori Cekom</button>--}}
-{{--                <button type="submit" class="btn  my-0 py-md-0 py-lg-1 btn-danger" name="akcija" id="zatvorikartica" value="zatvorikartica" style="display: none">Zatvori Karticom</button>--}}
             </div>
         </div>
         <div id="donji">
@@ -332,7 +320,7 @@
     </script>
 @endif
 <script>
-    var it={{$index}}
+    var it={{$index}};
     var neporuceni=0;
 </script>
 <script>
@@ -428,77 +416,69 @@
 
 <script>
     $(document).ready(function (){
-        $('.kategorija').click(function () {
-            $("#artikli").empty()
-            let katID=$(this).attr('id');
-            let brSel="#br"+katID
-            let n=$(brSel).val()
-            let html=''
-            for (let i=0;i<n;i++)
-            {
-                let idSel="#i"+katID+"_"+i
-                let nazivSel="#n"+katID+"_"+i
-                let cenaSel="#c"+katID+"_"+i
-                let id=$(idSel).val()
-                let cena=$(cenaSel).val()
-                let naziv=$(nazivSel).val()
-                html+='<p class="btn artikal  btn-warning my-lg-2 mx-lg-2 mx-md-0 my-md-0" id="'+id+'">'+naziv+'</p>'
-                html+='<input type="hidden" id="ac'+id+'" value="'+cena+'">'
-            }
-            $("#artikli").append(html)
-            $('.artikal').click(function () {
-                let id=$(this).attr('id')
-                let naziv=$(this).text()
-                let cena=$("#ac"+id).val()
-                neporuceni++;
-                $("#naplata").hide();
-                let html='<tr class="racunRed novi" id="tr'+it+'"><td><input type="hidden" class="popuststavke" name="popuststavke[]" value="0"></td><td><input type="hidden" class="cenabezpopusta" id="bp'+it+'" value="'+cena+'"></td><td><input type="hidden" name="stavkaid[]" value="'+id+'"></td><td><input type="hidden" class="stavkakolicina" name="stavkakolicina[]" value="1"></td><td><h6>'+naziv+'</h6></td><td><h6 class="kolicinastavke">1.00</h6></td><td><h6 class="cena">'+cena+'</h6></td></tr>'
-                it++
-                $("#dodatestavke").append(html)
-                UkupnaCena()
-                /*let bezPopusta=$("#bezPopusta")
-                let ukupnaCena = $("#ukupnaCena");
-                let trenutna=(bezPopusta.val())*1.00*/
-                cena-=($("#popust").val()/100)*cena
-                // bezPopusta.val(trenutna+(cena*1.00))
-                popust(true)
-                $(".novi").removeClass('novi')
-                $(document).on('click','.racunRed',function () {
-                    // $(this).closest('tr').remove()
-                    if (!$(this).closest('tr').hasClass('unselectable'))
+
+        // $(document).on('click','.kategorija',function (e) {
+        $('.kategorija').click(function (e) {
+            // console.log('clicc');
+            $.ajax({
+                url:"{{route('getProducts')}}"+"/"+e.currentTarget.id,
+                type:'get',
+                success:function (data) {
+                    console.log(data);
+                    $("#artikli").empty()
+                    let n=data.length
+                    let html=''
+                    for (let i=0;i<n;i++)
                     {
-                        $(".selected").removeClass('selected text-success')
-                        $(this).closest('tr').addClass('selected text-success')
+                        let id=data[i].PLUKod
+                        let cena=data[i].Cena
+                        let naziv=data[i].Naziv
+                        html+='<p class="btn artikal  btn-warning my-lg-2 mx-lg-2 mx-md-0 my-md-0" id="'+id+'">'+naziv+'</p>'
+                        html+='<input type="hidden" id="ac'+id+'" value="'+cena+'">'
                     }
-                })
-                $("#brisiizabranu").click(function () {
-                    /*let kolicina=$(".selected").find('.kolicinastavke').text()*1.00
-                    let cenaIzabrane=$(".selected").find('.cena').text()*1.00
-                    let trenutna=(bezPopusta.val())*1.00
-                    bezPopusta.val(trenutna-(kolicina*cenaIzabrane))*/
-                    popust()
-                    $(".selected").remove()
-                    neporuceni--
-                    if(neporuceni<0)
-                        neporuceni=0;
-                    if(!neporuceni)
-                        $("#naplata").show();
-                })
-                $("#enter").click(function () {
-                    let kol = $("#kolicina").val();
-                    if (kol!=="")
-                    {
-                        let starakolicina=$(".selected").find('.kolicinastavke').text()*1.00
-                        $(".selected").find('.kolicinastavke').text(kol)
-                        $(".selected").find('.stavkakolicina').val(kol)
-                       /* let novakolicina=$(".selected").find('.kolicinastavke').text()*1.00
-                        let cenaIzabrane=$(".selected").find('.cena').text()*1.00
-                        let trenutna=(bezPopusta.val())*1.00
-                        bezPopusta.val(trenutna+(novakolicina-starakolicina)*cenaIzabrane)*/
-                        popust()
-                        $("#kolicina").val("")
-                    }
-                })
+                    $("#artikli").append(html)
+                    $('.artikal').click(function () {
+                        let id=$(this).attr('id')
+                        let naziv=$(this).text()
+                        let cena=$("#ac"+id).val()
+                        neporuceni++;
+                        $("#naplata").hide();
+                        let html='<tr class="racunRed novi" id="tr'+it+'"><td><input type="hidden" class="popuststavke" name="popuststavke[]" value="0"></td><td><input type="hidden" class="cenabezpopusta" id="bp'+it+'" value="'+cena+'"></td><td><input type="hidden" name="stavkaid[]" value="'+id+'"></td><td><input type="hidden" class="stavkakolicina" name="stavkakolicina[]" value="1"></td><td><h6>'+naziv+'</h6></td><td><h6 class="kolicinastavke">1.00</h6></td><td><h6 class="cena">'+cena+'</h6></td></tr>'
+                        it++
+                        $("#dodatestavke").append(html)
+                        UkupnaCena()
+                        cena-=($("#popust").val()/100)*cena
+                        popust(true)
+                        $(".novi").removeClass('novi')
+                        $(document).on('click','.racunRed',function () {
+                            if (!$(this).closest('tr').hasClass('unselectable'))
+                            {
+                                $(".selected").removeClass('selected text-success')
+                                $(this).closest('tr').addClass('selected text-success')
+                            }
+                        })
+                        $("#brisiizabranu").click(function () {
+                            popust()
+                            $(".selected").remove()
+                            neporuceni--
+                            if(neporuceni<0)
+                                neporuceni=0;
+                            if(!neporuceni)
+                                $("#naplata").show();
+                        })
+                        $("#enter").click(function () {
+                            let kol = $("#kolicina").val();
+                            if (kol!=="")
+                            {
+                                let starakolicina=$(".selected").find('.kolicinastavke').text()*1.00
+                                $(".selected").find('.kolicinastavke').text(kol)
+                                $(".selected").find('.stavkakolicina').val(kol)
+                                popust()
+                                $("#kolicina").val("")
+                            }
+                        })
+                    })
+                }
             })
         })
         $("#popust").keyup(function (){

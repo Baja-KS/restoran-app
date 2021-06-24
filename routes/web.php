@@ -121,6 +121,7 @@ Route::middleware('auth')->group(function (){
 //    Route::get('/kasanaplata/{sto}','KasaController@naplata')->name('naplataKasa');//otvara formu za naplatu,Izbaceno
     Route::delete('/kasanaplata/{sto}/naplati','KasaController@naplati')->name('naplatiKasa');//BACKEND brise porudzbinu iz baze,stampa racun,i pise isti u dokumenta
     Route::delete('/kasanaplatafirma/{sto}/naplati','KasaController@naplatiZaFirmu')->name('naplatiKasaFirma');
+    Route::get('/products/{id?}','KasaController@getProducts')->name('getProducts');
 
     //prodaja konobara
     Route::get('/prodaja/{svi}','ProdajaController@index')->name('indexProdajaKonobara');

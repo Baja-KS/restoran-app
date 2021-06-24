@@ -9,6 +9,7 @@ use App\OtvorenRacun;
 use App\OtvorenRacunStavka;
 use App\Podkategorija;
 use App\Stampac;
+use App\StavkaMagacina;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -438,6 +439,19 @@ class KasaController extends Controller
 //        return response()->download(storage_path('app/public/fiskalniracun'.$ext));
 
 //        return $fullpath;
+    }
+
+    public function getProducts($id=null){
+        $category=Podkategorija::find($id);
+        if(!$category){
+            return \response()->json([],400);
+        }
+        $products=$category->artikli->toArray();
+        for($i=0;$i<count($products);++$i){
+            $price=StavkaMagacina::where('SifraArtikla',$products[$i]['PLUKod'])->first()->ZadnjaProdajnaCena;
+            $products[$i]['Cena']=$price;
+        }
+        return \response()->json($products);
     }
 
     public function create($sto,$greska=null)
