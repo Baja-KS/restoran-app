@@ -11,3 +11,8 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 /tests
+/public/kuhinja.pdf
+/public/sank.pdf
+/public/knjigasanka.pdf
+/public/firma.pdf
+/public/firmapreview.pdf
